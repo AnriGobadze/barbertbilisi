@@ -35,18 +35,18 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const today = new Date().toISOString().split('T')[0];
-    if(dateInput) { // Check if element exists before setting attribute
+    if(dateInput) { // დადასტურება, რომ ელემენტი არსებობს და შემდეგ ატრიბუტის დამონტაჟება
         dateInput.setAttribute('min', today);
     }
 
     function generateTimeSlots(selectedDateStr) {
-       if(!timeSlotsContainer) return; // Exit if container not found
+       if(!timeSlotsContainer) return; // გამოსვლა თუ კონტეინერი არ მოიძებნა
 
        timeSlotsContainer.innerHTML = '';
        if (selectedTimeInput) selectedTimeInput.value = '';
 
        if (!selectedDateStr) {
-           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">Select date</p>';
+           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">მიუთითეთ თარიღი</p>';
            return;
        }
        const selectedDate = new Date(selectedDateStr + 'T00:00:00');
@@ -80,12 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
        });
 
        if (!hasAvailableSlots && availableTimes.length > 0) {
-           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">No times left today</p>';
+           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">დღეს აღარ დარჩა დრო</p>';
        } else if (availableTimes.length === 0 && selectedDateStr) {
-            // Only show unavailable if a date is actually selected and the array was empty
-           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">Unavailable</p>';
+            // მხოლოდ მაშინ გამოჩნდება თუ თარიღი ნამდვილად შერჩეულია და მასში დროები არ არის
+           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">არ არის ხელმისაწვდომი</p>';
        } else if (!hasAvailableSlots && availableTimes.length === 0){
-             timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">No slots defined</p>'; // Fallback
+             timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">დროები არ არის დადგენილი</p>'; // უკანდახევა
        }
     }
 
@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
            const phone = phoneInput ? phoneInput.value.trim() : '';
 
             let errorMessage = '';
-            if (!service) errorMessage += 'Select Service. ';
-            if (!date) errorMessage += 'Select Date. ';
-            if (!time) errorMessage += 'Select Time. ';
-            if (!email) errorMessage += 'Enter Email. ';
-            else if (!/\S+@\S+\.\S+/.test(email)) errorMessage += 'Valid Email required. ';
+            if (!service) errorMessage += 'მიუთითეთ მომსახურება. ';
+            if (!date) errorMessage += 'მიუთითეთ თარიღი. ';
+            if (!time) errorMessage += 'მიუთითეთ დრო. ';
+            if (!email) errorMessage += 'მიუთითეთ ელ-ფოსტა. ';
+            else if (!/\S+@\S+\.\S+/.test(email)) errorMessage += 'მოგერიდეთ ელ-ფოსტის ფორმატი. ';
 
             if (errorMessage && confirmationMessage) {
                confirmationMessage.textContent = errorMessage.trim();
@@ -124,12 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if(confirmationMessage) {
-                 confirmationMessage.textContent = `Request sent for ${service} on ${date} at ${time}. Check ${email} for confirmation/details.`;
+                 confirmationMessage.textContent = `დამოწმების მოთხოვნა ${service} მომსახურებისთვის ${date} თარიღზე ${time} დროს. შეამოწმეთ ${email}-ზე განახლება.`;
                  confirmationMessage.classList.remove('error');
                  confirmationMessage.style.display = 'block';
                  setTimeout(() => { confirmationMessage.style.display = 'none'; }, 10000);
             }
-           console.log("Simulating Booking:", { service, barber, date, time, email, phone });
+           console.log("დამკვირვებელი შეკვეთა:", { service, barber, date, time, email, phone });
            // bookingForm.reset();
            // generateTimeSlots(null);
         });
@@ -157,11 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
            const message = contactMessageInput ? contactMessageInput.value.trim() : '';
 
             let contactError = '';
-            if (!name) contactError += 'Name required. ';
-            if (!email) contactError += 'Email required. ';
-            else if (!/\S+@\S+\.\S+/.test(email)) contactError += 'Valid email required. ';
-            if (!subject) contactError += 'Subject required. ';
-            if (!message) contactError += 'Message required. ';
+            if (!name) contactError += 'სახელი აუცილებელია. ';
+            if (!email) contactError += 'ელ-ფოსტა აუცილებელია. ';
+            else if (!/\S+@\S+\.\S+/.test(email)) contactError += 'ვალიდური ელ-ფოსტა აუცილებელია. ';
+            if (!subject) contactError += 'თემა აუცილებელია. ';
+            if (!message) contactError += 'შეტყობინება აუცილებელია. ';
 
 
             if (contactError && contactConfirmationMessage) {
@@ -172,12 +172,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if(contactConfirmationMessage){
-                contactConfirmationMessage.textContent = `Thanks, ${name}! We received your message and will reply to ${email} soon.`;
+                contactConfirmationMessage.textContent = `გმადლობთ, ${name}! ჩვენ მივიღეთ თქვენი შეტყობინება და მალე გიპასუხებთ ${email}-ზე.`;
                 contactConfirmationMessage.classList.remove('error');
                 contactConfirmationMessage.style.display = 'block';
                 setTimeout(() => { contactConfirmationMessage.style.display = 'none'; }, 8000);
             }
-           console.log("Simulating Contact:", { name, email, subject, message });
+           console.log("დამკვირვებელი შეკვეთა:", { name, email, subject, message });
            contactForm.reset();
         });
     }
