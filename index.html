@@ -1,30 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ka">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clip & Style - Modern Barbershop Booking</title>
+    <title>სტილის სავანე | პრემიუმ მოვლა და ჯავშანი</title>
+    <!-- ========================================== -->
+    <!-- == IMPORTANT: LINK YOUR UPDATED CSS FILE HERE == -->
+    <!-- This CSS MUST include rules for:          -->
+    <!-- .page-section { display: none; }          -->
+    <!-- .active-section { display: block; } /* Or flex/grid as needed */ -->
+    <!-- .nav-link.active { /* styles for active nav item */ } -->
+    <!-- ========================================== -->
     <link rel="stylesheet" href="Newshop.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Minimal inline styles for dev visibility - REMOVE when your CSS is linked -->
+    <!-- <style>
+        .page-section { border: 1px dashed red; margin-bottom: 10px; display: none; }
+        .active-section { display: block; border: 2px solid green; }
+        .nav-link.active { background-color: rgba(255,255,0,0.3); }
+    </style> -->
 </head>
 <body>
 
     <header>
         <nav class="navbar">
-            <a href="#hero" class="nav-logo">
-                <img src="https://as1.ftcdn.net/v2/jpg/02/05/49/82/1000_F_205498258_AfQmtyR5kO5llwKd6fWRRxcc4xRUbQcb.jpg" alt="Clip & Style Logo">
-                <span>Clip & Style</span>
+            <a href="#hero" class="nav-logo spa-link"> <!-- spa-link triggers JS nav -->
+                <img src="./ji.jpg" alt="სტილის სავანე ლოგო">
+                <span>სტილის სავანე</span>
             </a>
             <ul class="nav-menu">
-                <li class="nav-item"><a href="#hero" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
-                <li class="nav-item"><a href="#barbers" class="nav-link">Barbers</a></li>
-                <li class="nav-item"><a href="#booking" class="nav-link">Booking</a></li>
-                <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-                <li class="nav-item"><a href="#booking" class="nav-link book-now-nav">Book Now</a></li>
+                <!-- Mark 'Home' as active initially -->
+                <li class="nav-item"><a href="#hero" class="nav-link spa-link active">მთავარი</a></li>
+                <li class="nav-item"><a href="#services" class="nav-link spa-link">სერვისები</a></li>
+                <li class="nav-item"><a href="#booking" class="nav-link spa-link">დაჯავშნა</a></li>
+                <li class="nav-item"><a href="#contact" class="nav-link spa-link">კონტაქტი</a></li>
+                <li class="nav-item"><a href="#booking" class="nav-link book-now-nav spa-link">დაჯავშნე ახლა</a></li>
             </ul>
             <div class="hamburger">
                 <span class="bar"></span>
@@ -34,202 +49,178 @@
         </nav>
     </header>
 
-    <main>
-        <section id="hero" class="hero-section">
-            <div class="hero-content animate-on-scroll fade-in-up">
-                <h1>Experience the Art of Grooming</h1>
-                <p>Modern Styles, Classic Techniques. Book your next appointment online.</p>
-                <a href="#booking" class="cta-button">Book Appointment</a>
+    <!-- Main content area where sections are switched -->
+    <main id="main-content">
+
+        <!-- Hero Section (Home) - Visible on Load -->
+        <section id="hero" class="hero-section page-section active-section">
+            <div class="hero-content">
+                <h1>ვქმნით თავდაჯერებულობას, თითოეული შეჭრით</h1>
+                <p>განიცადეთ პერსონალური მოვლა თანამედროვე, დახვეწილ ატმოსფეროში. დაჯავშნეთ თქვენი ვიზიტი დღესვე.</p>
+                <a href="#booking" class="cta-button spa-link">დაჯავშნე შენი დრო</a>
             </div>
         </section>
 
-        <section id="services" class="content-section">
-            <h2 class="section-title animate-on-scroll fade-in">Our Services</h2>
-            <div class="service-container animate-on-scroll fade-in-delay">
+        <!-- Services Section - Hidden on Load -->
+        <section id="services" class="content-section page-section">
+            <h2 class="section-title">ჩვენი სერვისები</h2>
+            <div class="service-container">
                 <div class="service-card">
                     <i class="fas fa-cut service-icon"></i>
-                    <h3>Haircut</h3>
-                    <p>Precision cuts tailored to your style.</p>
+                    <h3>ზუსტი თმის შეჭრა</h3>
+                    <p>თქვენს სტილზე მორგებული, დეტალებზე ორიენტირებული შეჭრა.</p>
+                    <small class="service-duration">(~ 45 წუთი)</small>
                 </div>
                 <div class="service-card">
                     <i class="fas fa-leaf service-icon"></i>
-                    <h3>Beard Trim</h3>
-                    <p>Shape, trim, and condition your beard.</p>
+                    <h3>წვერის მოდელირება</h3>
+                    <p>ექსპერტული დამუშავება, ფორმის მიცემა და კონდიცირება.</p>
+                    <small class="service-duration">(~ 30 წუთი)</small>
                 </div>
                 <div class="service-card">
                     <i class="fas fa-star service-icon"></i>
-                    <h3>Skin Fade</h3>
-                    <p>Expertly blended fades for a sharp look.</p>
+                    <h3>მკვეთრი გადაყვანა</h3>
+                    <p>უწყვეტი გადასვლები თანამედროვე, სუფთა იერისთვის.</p>
+                    <small class="service-duration">(~ 45 წუთი)</small>
                 </div>
                  <div class="service-card">
-                    <i class="fas fa-spa service-icon"></i>
-                    <h3>Wash & Style</h3>
-                    <p>Relaxing wash followed by expert styling.</p>
+                    <i class="fas fa-shower service-icon"></i>
+                    <h3>განახლება და დავარცხნა</h3>
+                    <p>გამამხნევებელი დაბანა და ექსპერტული სტილიზაცია.</p>
+                     <small class="service-duration">(~ 30 წუთი)</small>
+                </div>
+                 <div class="service-card">
+                    <i class="fas fa-tint service-icon"></i>
+                    <h3>თმის ტონირება (შენიღბვა)</h3> <!-- Updated Georgian name slightly -->
+                    <p>ბუნებრივი ტონები ჭაღარის დასაფარად ან სტილის ხაზგასასმელად.</p>
+                    <small class="service-duration">(~ 1 საათი)</small>
+                </div>
+                 <div class="service-card">
+                    <i class="fas fa-users service-icon"></i> <!-- Changed Icon -->
+                    <h3>მამა-შვილის შეჭრა</h3> <!-- Example Service Name -->
+                    <p>ერთობლივი ვიზიტი და სტილი განსაკუთრებული კავშირისთვის.</p>
+                    <small class="service-duration">(~ 1.5 საათი)</small>
                 </div>
             </div>
         </section>
 
-        <section id="barbers" class="content-section alt-bg">
-            <h2 class="section-title animate-on-scroll fade-in">Meet Our Barbers</h2>
-            <div class="barber-container">
-                 <div class="barber-profile animate-on-scroll fade-in-up">
-                    <img src="https://www.josephguinbarber.com/uploads/1/2/4/4/124499791/josephguinhome_orig.jpg" alt="Barber David">
-                    <h3>David</h3>
-                    <p>Master Barber specializing in classic cuts and hot towel shaves. Years of experience guarantee a perfect result.</p>
-                </div>
-                <div class="barber-profile animate-on-scroll fade-in-up" style="animation-delay: 0.1s;">
-                    <img src="https://t4.ftcdn.net/jpg/03/38/06/27/360_F_338062776_mhAiBvOjM1ykTlulJGU4JhMaZrbbDqOp.jpg" alt="Barber Luke">
-                    <h3>Luke</h3>
-                    <p>Expert in modern styles, fades, and textured looks. Always up-to-date with the latest trends.</p>
-                </div>
-                 <div class="barber-profile animate-on-scroll fade-in-up" style="animation-delay: 0.2s;">
-                    <img src="https://us.images.westend61.de/0001470238pw/young-hipster-female-barber-holding-sharp-razor-and-looking-at-camera-while-standing-in-barbershop-ADSF17153.jpg" alt="Barber Jane">
-                    <h3>Jane</h3>
-                     <p>Passionate about creative cuts and beard grooming. Dedicated to making clients look and feel great.</p>
-                </div>
-                 <div class="barber-profile animate-on-scroll fade-in-up" style="animation-delay: 0.3s;">
-                     <img src="https://static1.squarespace.com/static/566897400ab377203d1c9af0/566915f0d82d5e5a4343f70f/6250da8a1adbad6fef380f04/1651524692976/femalebarbercoverimage.jpg?format=1500w" alt="Barber Olivia">
-                     <h3>Olivia</h3>
-                     <p>Specializes in sharp lines, skin fades, and detailed designs. Precision and artistry in every cut.</p>
-                </div>
-                <div class="barber-profile animate-on-scroll fade-in-up" style="animation-delay: 0.4s;">
-                    <img src="https://cdn.prod.website-files.com/5cb569e54ca2fddd5451cbb2/62e0ba44b4bd5e786497a37a_Fringe-Hairtsyles.jpg" alt="Barber Miles">
-                    <h3>Miles</h3>
-                    <p>Focuses on traditional barbering with a modern twist. Beard sculpting and meticulous cuts are his forte.</p>
-               </div>
-            </div>
-        </section>
-
-        <section id="booking" class="content-section unique-booking">
+        <!-- Booking Section - Hidden on Load -->
+        <section id="booking" class="content-section unique-booking alt-bg page-section">
              <div class="booking-layout-wrapper">
-                <div class="booking-info-panel animate-on-scroll fade-in-left">
-                    <h2 class="section-title ">Book Your Slot</h2>
-                     <p>Use our simple system to find a time that works for you. Select your service, preferred artist (or any available), and choose your date and time.</p>
+                <div class="booking-info-panel">
+                    <h2 class="section-title">დაჯავშნე შენი დრო</h2>
+                     <p>აირჩიეთ სერვისი, სასურველი თარიღი და ხელმისაწვდომი დრო ქვემოთ. შეავსეთ თქვენი მონაცემები მოთხოვნის დასასრულებლად.</p>
                     <hr>
-                    <h4>Booking Policy</h4>
+                    <h4>ჯავშნის პოლიტიკა</h4>
                      <p class="booking-policy-text">
-                        A confirmation email will be sent upon booking. Please note: a small deposit may be required for new clients (details in confirmation email). Cancellations/reschedules require 24-hour notice to avoid fees.
+                        მოთხოვნის შემდეგ მალევე მიიღებთ დამადასტურებელ ელ. ფოსტას. გაუქმების ან დროის შეცვლისთვის გთხოვთ შეგვატყობინოთ 24 საათით ადრე, რათა თავიდან აიცილოთ შესაძლო საფასური. გთხოვთ მობრძანდეთ ვიზიტამდე 5 წუთით ადრე.
                     </p>
                     <i class="fas fa-calendar-check booking-icon-bg"></i>
                 </div>
-                <div class="booking-form-wrapper animate-on-scroll fade-in-right">
-                     <form id="booking-form" class="booking-form ">
-                         <div class="form-row">
-                            <div class="form-group half-width">
-                                <label for="service">Service:</label>
+                <div class="booking-form-wrapper">
+                     <form id="booking-form" class="booking-form">
+                         <div class="form-group">
+                                <label for="service">სერვისი:</label>
                                 <select id="service" name="service" required>
-                                     <option value="" disabled selected>Select...</option>
-                                    <option value="Haircut">Haircut</option>
-                                    <option value="Beard Trim">Beard Trim</option>
-                                    <option value="Skin Fade">Skin Fade</option>
-                                    <option value="Wash & Style">Wash & Style</option>
-                                    <option value="Haircut & Beard Trim">Haircut & Beard Trim</option>
-                                </select>
+                                     <option value="" disabled selected>აირჩიეთ...</option>
+                                     <!-- Populate options based on services above -->
+                                     <option value="ზუსტი თმის შეჭრა">ზუსტი თმის შეჭრა</option>
+                                     <option value="წვერის მოდელირება">წვერის მოდელირება</option>
+                                     <option value="მკვეთრი გადაყვანა">მკვეთრი გადაყვანა</option>
+                                     <option value="განახლება და დავარცხნა">განახლება და დავარცხნა</option>
+                                     <option value="თმის ტონირება">თმის ტონირება (შენიღბვა)</option>
+                                     <option value="მამა-შვილის შეჭრა">მამა-შვილის შეჭრა</option>
+                                     <option value="შეჭრა და წვერის კომბო">შეჭრა და წვერის კომბო (მოკლე)</option> <!-- Example Combo -->
+                                 </select>
                             </div>
-                             <div class="form-group half-width">
-                                <label for="barber">Barber:</label>
-                                <select id="barber" name="barber">
-                                     <option value="Any Available" selected>Any Available</option>
-                                     <option value="David">David</option>
-                                     <option value="Luke">Luke</option>
-                                     <option value="Jane">Jane</option>
-                                     <option value="Olivia">Olivia</option>
-                                     <option value="Miles">Miles</option>
-                                </select>
-                            </div>
-                        </div>
                          <div class="form-row">
                              <div class="form-group half-width">
-                                <label for="date">Date:</label>
-                                <input type="date" id="date" name="date" required>
+                                <label for="date">თარიღი:</label>
+                                <input type="date" id="date" name="date" required min="">
                              </div>
                             <div class="form-group half-width">
-                                 <label for="time-slots-label">Time:</label>
+                                 <label for="time-slots-label">ხელმისაწვდომი დროები:</label>
                                 <div id="time-slots" class="time-slot-container">
-                                    <p class="time-slot-placeholder">Select date</p>
+                                    <p class="time-slot-placeholder">აირჩიეთ თარიღი დროების სანახავად</p>
                                 </div>
                              </div>
                         </div>
-                        <input type="hidden" id="selected-time" name="selected_time" required>
-
+                        <input type="hidden" id="selected-time" name="selected_time" value="" required>
+                         <div class="form-group">
+                            <label for="name">სრული სახელი:</label>
+                            <input type="text" id="name" name="name" placeholder="შეიყვანეთ თქვენი სრული სახელი" required>
+                        </div>
                         <div class="form-group">
-                            <label for="email">Your Email:</label>
-                            <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                            <label for="email">ელ. ფოსტა:</label>
+                            <input type="email" id="email" name="email" placeholder="თქვენ@მაგალითი.com" required>
                         </div>
                          <div class="form-group">
-                             <label for="phone">Your Phone Number (Optional):</label>
-                            <input type="tel" id="phone" name="phone" placeholder="e.g., 123-456-7890">
+                             <label for="phone">ტელეფონის ნომერი (სურვილისამებრ):</label>
+                            <input type="tel" id="phone" name="phone" placeholder="მაგ., 555-123-456">
                         </div>
-
-                        <button type="submit" class="cta-button full-width-button">Request Booking</button>
-                         <div id="confirmation-message" class="confirmation-message" style="display: none;"></div>
+                        <button type="submit" class="cta-button full-width-button">ჯავშნის მოთხოვნა</button>
+                         <div id="booking-confirmation-message" style="display: none;"></div>
                      </form>
                  </div>
              </div>
         </section>
 
-        <section id="contact" class="content-section unique-contact alt-bg">
+        <!-- Contact Section - Hidden on Load -->
+        <section id="contact" class="content-section unique-contact page-section">
              <div class="contact-layout-wrapper">
-                 <div class="contact-form-wrapper animate-on-scroll fade-in-left">
-                    <h2 class="section-title">Get In Touch</h2>
+                  <div class="contact-form-wrapper">
+                    <h2 class="section-title">დაგვიკავშირდით</h2>
                      <form id="contact-form" class="contact-form">
-                        <p class="form-description">Have questions? Fill out the form below.</p>
-                         <div class="form-row">
-                             <div class="form-group half-width">
-                                <label for="contact-name">Your Name:</label>
-                                <input type="text" id="contact-name" name="contact_name" required placeholder="Full Name">
-                            </div>
-                            <div class="form-group half-width">
-                                <label for="contact-email">Your Email:</label>
-                                <input type="email" id="contact-email" name="contact_email" required placeholder="you@example.com">
-                            </div>
-                        </div>
+                        <p class="form-description">კითხვები გაქვთ? გამოიყენეთ ქვემოთ მოცემული ფორმა ან დაგვირეკეთ პირდაპირ.</p>
                         <div class="form-group">
-                            <label for="contact-subject">Subject:</label>
-                            <select id="contact-subject" name="contact_subject" required>
-                                <option value="" disabled selected>Choose a reason...</option>
-                                <option value="General Inquiry">General Inquiry</option>
-                                <option value="Service Question">Question about Services</option>
-                                <option value="Booking Help">Help with Booking</option>
-                                <option value="Feedback">Feedback</option>
-                            </select>
-                        </div>
+                             <label for="contact-name">თქვენი სახელი:</label>
+                             <input type="text" id="contact-name" name="contact_name" required placeholder="სრული სახელი">
+                         </div>
                         <div class="form-group">
-                             <label for="contact-message">Your Message:</label>
-                            <textarea id="contact-message" name="contact_message" rows="4" required placeholder="Type your message here..."></textarea>
+                             <label for="contact-email">თქვენი ელ. ფოსტა:</label>
+                             <input type="email" id="contact-email" name="contact_email" required placeholder="თქვენ@მაგალითი.com">
+                         </div>
+                         <div class="form-group">
+                             <label for="contact-message">თქვენი შეტყობინება:</label>
+                            <textarea id="contact-message" name="contact_message" rows="5" required placeholder="დაწერეთ თქვენი შეტყობინება აქ..."></textarea>
                         </div>
-                        <button type="submit" class="cta-button full-width-button">Send Message</button>
-                         <div id="contact-confirmation-message" class="confirmation-message" style="display: none;"></div>
+                        <button type="submit" class="cta-button full-width-button">შეტყობინების გაგზავნა</button>
+                         <div id="contact-confirmation-message" style="display: none;"></div>
                     </form>
                  </div>
-                 <div class="contact-info-panel animate-on-scroll fade-in-right">
-                     <h3>Visit Us</h3>
-                     <p>123 Style Street,<br> Groomington, ST 45678</p>
-                     <h3>Call Us</h3>
+                 <div class="contact-info-panel">
+                     <h3>გვესტუმრეთ</h3>
+                     <p>სტილის ქუჩა 123,<br> გრუმინგტონი, ST 45678</p>
+                     <h3>დაგვირეკეთ</h3>
                      <p>(555) 123-4567</p>
-                     <h3>Hours</h3>
-                     <p>Mon-Fri: 9am - 7pm<br>Sat: 10am - 5pm<br>Sun: Closed</p>
+                     <h3>სამუშაო საათები</h3>
+                     <p>სამ-პარ: 9:00 - 19:00<br>შაბ: 10:00 - 17:00<br>კვი-ორ: დაკეტილია</p>
                      <i class="fas fa-map-marker-alt contact-icon-bg"></i>
                  </div>
             </div>
         </section>
-    </main>
+
+    </main> <!-- /#main-content -->
 
     <footer class="unique-footer">
         <div class="footer-content">
             <div class="footer-logo">
-                 <img src="https://as1.ftcdn.net/v2/jpg/02/05/49/82/1000_F_205498258_AfQmtyR5kO5llwKd6fWRRxcc4xRUbQcb.jpg" alt="Clip & Style Mini Logo">
-                <span>Clip & Style</span>
+                <img src="./ji.jpg" alt="სტილის სავანე მინი ლოგო">
+                <span>სტილის სავანე</span>
             </div>
-            <p class="footer-copy">© 2023 Clip & Style. Redefining Grooming.</p>
+            <p class="footer-copy">© 2024 სტილის სავანე. პრემიუმ მოვლის გამოცდილება.</p> 
             <div class="social-icons-footer">
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="ფეისბუქი"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="ინსტაგრამი"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="ტვიტერი"><i class="fab fa-twitter"></i></a>
             </div>
         </div>
+
     </footer>
 
     <script src="Newshop.js"></script>
+
+
+
 </body>
 </html>

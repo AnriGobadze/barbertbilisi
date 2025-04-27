@@ -1,200 +1,204 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- Selectors ---
+    const spaLinks = document.querySelectorAll('.spa-link');
+    const pageSections = document.querySelectorAll('.page-section');
+    const navMenuLinks = document.querySelectorAll('.navbar .nav-link'); // More specific selector for nav highlight
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
-    const navLinks = document.querySelectorAll('.nav-link');
+    const mainContentArea = document.getElementById('main-content');
 
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-    });
+    // --- Section Switching Function ---
+    function switchActiveSection(targetId) {
+        // Guard clause
+        if (!targetId) return;
 
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (navMenu.classList.contains('active')) {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-    });
-
-    const bookingForm = document.getElementById('booking-form');
-    const dateInput = document.getElementById('date');
-    const timeSlotsContainer = document.getElementById('time-slots');
-    const confirmationMessage = document.getElementById('confirmation-message');
-    const selectedTimeInput = document.getElementById('selected-time');
-    const emailInput = document.getElementById('email');
-    const phoneInput = document.getElementById('phone');
-
-    const availableTimes = [
-        '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-        '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-        '16:00', '16:30'
-    ];
-
-    const today = new Date().toISOString().split('T')[0];
-    if(dateInput) { // დადასტურება, რომ ელემენტი არსებობს და შემდეგ ატრიბუტის დამონტაჟება
-        dateInput.setAttribute('min', today);
-    }
-
-    function generateTimeSlots(selectedDateStr) {
-       if(!timeSlotsContainer) return; // გამოსვლა თუ კონტეინერი არ მოიძებნა
-
-       timeSlotsContainer.innerHTML = '';
-       if (selectedTimeInput) selectedTimeInput.value = '';
-
-       if (!selectedDateStr) {
-           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">მიუთითეთ თარიღი</p>';
-           return;
-       }
-       const selectedDate = new Date(selectedDateStr + 'T00:00:00');
-       const now = new Date();
-       const isToday = selectedDate.toDateString() === now.toDateString();
-       let hasAvailableSlots = false;
-
-       availableTimes.forEach(time => {
-            const [hours, minutes] = time.split(':');
-            const slotTime = new Date(selectedDate);
-            slotTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.classList.add('time-slot');
-            button.textContent = time;
-            button.dataset.time = time;
-
-            if (isToday && slotTime < now) {
-                button.classList.add('disabled');
-                button.disabled = true;
+        let sectionFound = false;
+        // Hide all sections and check if target exists
+        pageSections.forEach(section => {
+            if (section.id === targetId) {
+                section.classList.add('active-section');
+                sectionFound = true;
             } else {
-                hasAvailableSlots = true;
-                button.addEventListener('click', () => {
-                    const currentSelected = timeSlotsContainer.querySelector('.time-slot.selected');
-                    if (currentSelected) currentSelected.classList.remove('selected');
-                    button.classList.add('selected');
-                    if (selectedTimeInput) selectedTimeInput.value = time;
-                });
+                section.classList.remove('active-section');
             }
-           timeSlotsContainer.appendChild(button);
-       });
+        });
 
-       if (!hasAvailableSlots && availableTimes.length > 0) {
-           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">დღეს აღარ დარჩა დრო</p>';
-       } else if (availableTimes.length === 0 && selectedDateStr) {
-            // მხოლოდ მაშინ გამოჩნდება თუ თარიღი ნამდვილად შერჩეულია და მასში დროები არ არის
-           timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">არ არის ხელმისაწვდომი</p>';
-       } else if (!hasAvailableSlots && availableTimes.length === 0){
-             timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">დროები არ არის დადგენილი</p>'; // უკანდახევა
-       }
+        // Fallback if the targetId doesn't match any section
+        if (!sectionFound) {
+            console.warn(`Target section "#${targetId}" not found. Showing #hero.`);
+            document.getElementById('hero')?.classList.add('active-section');
+            targetId = 'hero'; // Update targetId for nav highlight
+        }
+
+        // Update Navbar Highlight
+        navMenuLinks.forEach(link => {
+            // Check if link's href corresponds to the now active section ID
+            if (link.getAttribute('href') === `#${targetId}`) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
+         // Handle logo "active" state if needed (e.g., when home is active)
+        const navLogo = document.querySelector('.nav-logo');
+        if (navLogo) {
+            if (targetId === 'hero') {
+                navLogo.classList.add('active'); // You might style .nav-logo.active
+            } else {
+                navLogo.classList.remove('active');
+            }
+         }
+
+        // Optional: Scroll to top of content area, accounting for fixed navbar
+        if (mainContentArea) {
+             const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 70; // Get actual or default height
+             const targetScrollPosition = mainContentArea.offsetTop - navbarHeight - 10; // Add small buffer
+             window.scrollTo({
+                 top: targetScrollPosition > 0 ? targetScrollPosition : 0, // Prevent negative scroll values
+                 behavior: 'smooth'
+             });
+         }
     }
 
-    if(dateInput) {
-        dateInput.addEventListener('change', (event) => generateTimeSlots(event.target.value));
-        generateTimeSlots(dateInput.value);
-    }
+    // --- Event Listeners for SPA Links ---
+    spaLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                event.preventDefault(); // Stop default anchor jump
+                const targetId = href.substring(1); // Get ID without '#'
+                switchActiveSection(targetId);
 
-    if(bookingForm){
-        bookingForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            if(confirmationMessage){
-                 confirmationMessage.style.display = 'none';
-                 confirmationMessage.classList.remove('error');
+                // Close mobile menu if open
+                if (hamburger && hamburger.classList.contains('active')) {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
             }
+        });
+    });
 
-           const service = bookingForm.service.value;
-           const barber = bookingForm.barber.value;
-           const date = dateInput.value;
-           const time = selectedTimeInput ? selectedTimeInput.value : '';
-           const email = emailInput ? emailInput.value.trim() : '';
-           const phone = phoneInput ? phoneInput.value.trim() : '';
-
-            let errorMessage = '';
-            if (!service) errorMessage += 'მიუთითეთ მომსახურება. ';
-            if (!date) errorMessage += 'მიუთითეთ თარიღი. ';
-            if (!time) errorMessage += 'მიუთითეთ დრო. ';
-            if (!email) errorMessage += 'მიუთითეთ ელ-ფოსტა. ';
-            else if (!/\S+@\S+\.\S+/.test(email)) errorMessage += 'მოგერიდეთ ელ-ფოსტის ფორმატი. ';
-
-            if (errorMessage && confirmationMessage) {
-               confirmationMessage.textContent = errorMessage.trim();
-               confirmationMessage.classList.add('error');
-               confirmationMessage.style.display = 'block';
-               return;
-            }
-
-            if(confirmationMessage) {
-                 confirmationMessage.textContent = `დამოწმების მოთხოვნა ${service} მომსახურებისთვის ${date} თარიღზე ${time} დროს. შეამოწმეთ ${email}-ზე განახლება.`;
-                 confirmationMessage.classList.remove('error');
-                 confirmationMessage.style.display = 'block';
-                 setTimeout(() => { confirmationMessage.style.display = 'none'; }, 10000);
-            }
-           console.log("დამკვირვებელი შეკვეთა:", { service, barber, date, time, email, phone });
-           // bookingForm.reset();
-           // generateTimeSlots(null);
+    // --- Hamburger Menu Toggle ---
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
         });
     }
 
+    // --- Minimum Date for Input ---
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.min = `${yyyy}-${mm}-${dd}`;
+    }
+
+    // --- Time Slot Logic (No changes needed from previous) ---
+    const timeSlotsContainer = document.getElementById('time-slots');
+    const selectedTimeInput = document.getElementById('selected-time');
+    const availableTimes = ["09:00", "09:45", "10:30", "11:15", "12:00", "13:30", "14:15", "15:00", "15:45", "16:30", "17:15"];
+    const generateTimeSlots = () => {
+        if (!timeSlotsContainer) return;
+        timeSlotsContainer.innerHTML = '';
+        if (!dateInput || !dateInput.value) {
+             timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">აირჩიეთ თარიღი დროების სანახავად</p>';
+             return;
+        }
+        // Simplified demo availability - replace with real logic if needed
+        const dayOfWeek = new Date(dateInput.value + 'T00:00:00').getDay();
+        let timesToShow = [...availableTimes];
+        if (dayOfWeek === 0 || dayOfWeek === 1) timesToShow = [];
+        else if (dayOfWeek === 6) timesToShow = timesToShow.filter(time => time < "17:00"); // Sat cutoff 5 PM
+        else timesToShow = timesToShow.filter(() => Math.random() > 0.25); // Randomly remove ~25%
+
+         if (timesToShow.length === 0) {
+            timeSlotsContainer.innerHTML = '<p class="time-slot-placeholder">ამ თარიღზე თავისუფალი დროები არ არის.</p>';
+         } else {
+            timesToShow.forEach(time => {
+                 const slot = document.createElement('button');
+                 slot.type = 'button'; slot.classList.add('time-slot'); slot.textContent = time; slot.dataset.time = time;
+                 timeSlotsContainer.appendChild(slot);
+            });
+         }
+    };
+    if (dateInput) dateInput.addEventListener('change', generateTimeSlots);
+    if (timeSlotsContainer && selectedTimeInput) {
+         timeSlotsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('time-slot') && !e.target.classList.contains('disabled')) {
+                 timeSlotsContainer.querySelectorAll('.time-slot.selected').forEach(el => el.classList.remove('selected'));
+                 e.target.classList.add('selected');
+                 selectedTimeInput.value = e.target.dataset.time;
+            }
+         });
+    }
+
+    // --- Form Submissions (No changes needed from previous) ---
+    const bookingForm = document.getElementById('booking-form');
+    const bookingConfirmation = document.getElementById('booking-confirmation-message');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', (e) => {
+             e.preventDefault();
+             bookingConfirmation.style.display = 'none'; bookingConfirmation.classList.remove('error');
+             // Validation
+             const serviceSelect = document.getElementById('service');
+             const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
+             const dateValue = dateInput ? dateInput.value : null;
+             const timeValue = selectedTimeInput ? selectedTimeInput.value : null;
+             const nameValue = document.getElementById('name')?.value;
+             const emailValue = document.getElementById('email')?.value;
+
+             if (!serviceSelect.value || !dateValue || !timeValue || !nameValue || !emailValue) {
+                bookingConfirmation.textContent = 'გთხოვთ, შეავსოთ ყველა სავალდებულო ველი და აირჩიოთ დრო.';
+                bookingConfirmation.className = 'confirmation-message error';
+                bookingConfirmation.style.display = 'block';
+                return;
+             }
+             // Success
+             bookingConfirmation.innerHTML = `<strong>გმადლობთ, ${nameValue}!</strong><br> თქვენი მოთხოვნა <strong>${serviceText}</strong> სერვისზე <strong>${dateValue}</strong>, <strong>${timeValue}</strong> დროზე მიღებულია. დასტურისთვის შეამოწმეთ ${emailValue}.`;
+             bookingConfirmation.className = 'confirmation-message';
+             bookingConfirmation.style.display = 'block';
+        });
+    }
 
     const contactForm = document.getElementById('contact-form');
-    const contactConfirmationMessage = document.getElementById('contact-confirmation-message');
-    const contactNameInput = document.getElementById('contact-name');
-    const contactEmailInput = document.getElementById('contact-email');
-    const contactSubjectInput = document.getElementById('contact-subject');
-    const contactMessageInput = document.getElementById('contact-message');
-
-    if(contactForm) {
-        contactForm.addEventListener('submit', (event) => {
-           event.preventDefault();
-           if(contactConfirmationMessage) {
-                contactConfirmationMessage.style.display = 'none';
-                contactConfirmationMessage.classList.remove('error');
-           }
-
-           const name = contactNameInput ? contactNameInput.value.trim() : '';
-           const email = contactEmailInput ? contactEmailInput.value.trim() : '';
-           const subject = contactSubjectInput ? contactSubjectInput.value : '';
-           const message = contactMessageInput ? contactMessageInput.value.trim() : '';
-
-            let contactError = '';
-            if (!name) contactError += 'სახელი აუცილებელია. ';
-            if (!email) contactError += 'ელ-ფოსტა აუცილებელია. ';
-            else if (!/\S+@\S+\.\S+/.test(email)) contactError += 'ვალიდური ელ-ფოსტა აუცილებელია. ';
-            if (!subject) contactError += 'თემა აუცილებელია. ';
-            if (!message) contactError += 'შეტყობინება აუცილებელია. ';
-
-
-            if (contactError && contactConfirmationMessage) {
-                contactConfirmationMessage.textContent = contactError.trim();
-               contactConfirmationMessage.classList.add('error');
-               contactConfirmationMessage.style.display = 'block';
-               return;
+    const contactConfirmation = document.getElementById('contact-confirmation-message');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            contactConfirmation.style.display = 'none'; contactConfirmation.classList.remove('error');
+            // Validation
+            const nameValue = document.getElementById('contact-name')?.value;
+            const emailValue = document.getElementById('contact-email')?.value;
+            const messageValue = document.getElementById('contact-message')?.value;
+            if (!nameValue || !emailValue || !messageValue) {
+                contactConfirmation.textContent = 'გთხოვთ, შეავსოთ ყველა ველი.';
+                contactConfirmation.className = 'confirmation-message error';
+                contactConfirmation.style.display = 'block';
+                return;
             }
-
-            if(contactConfirmationMessage){
-                contactConfirmationMessage.textContent = `გმადლობთ, ${name}! ჩვენ მივიღეთ თქვენი შეტყობინება და მალე გიპასუხებთ ${email}-ზე.`;
-                contactConfirmationMessage.classList.remove('error');
-                contactConfirmationMessage.style.display = 'block';
-                setTimeout(() => { contactConfirmationMessage.style.display = 'none'; }, 8000);
-            }
-           console.log("დამკვირვებელი შეკვეთა:", { name, email, subject, message });
-           contactForm.reset();
+            // Success
+            contactConfirmation.textContent = `შეტყობინება გაგზავნილია! გმადლობთ, ${nameValue}. მალე გიპასუხებთ ${emailValue}-ზე.`;
+            contactConfirmation.className = 'confirmation-message';
+            contactConfirmation.style.display = 'block';
         });
     }
 
-    const scrollElements = document.querySelectorAll('.animate-on-scroll');
-    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    // --- Initial Setup ---
+    // The page should load with #hero visible due to the initial HTML class.
+    // If you prefer JS to handle initial state, remove 'active-section' from #hero
+    // in HTML and uncomment the line below:
+    // switchActiveSection('hero');
 
-    const observerCallback = (entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    };
+     // Trigger generation of time slots placeholder initially if date input exists
+     if (dateInput) {
+         generateTimeSlots();
+     }
 
-    const scrollObserver = new IntersectionObserver(observerCallback, observerOptions);
-    scrollElements.forEach(el => scrollObserver.observe(el));
+     // --- Scroll Animations (Keep removed if not desired/needed) ---
 
-});
+}); // End DOMContentLoaded
