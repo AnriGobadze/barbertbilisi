@@ -4,37 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>სტილის სავანე | პრემიუმ მოვლა და ჯავშანი</title>
-    <!-- ========================================== -->
-    <!-- == IMPORTANT: LINK YOUR UPDATED CSS FILE HERE == -->
-    <!-- This CSS MUST include rules for:          -->
-    <!-- .page-section { display: none; }          -->
-    <!-- .active-section { display: block; } /* Or flex/grid as needed */ -->
-    <!-- .nav-link.active { /* styles for active nav item */ } -->
-    <!-- ========================================== -->
     <link rel="stylesheet" href="Newshop.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Minimal inline styles for dev visibility - REMOVE when your CSS is linked -->
-    <!-- <style>
-        .page-section { border: 1px dashed red; margin-bottom: 10px; display: none; }
-        .active-section { display: block; border: 2px solid green; }
-        .nav-link.active { background-color: rgba(255,255,0,0.3); }
-    </style> -->
 </head>
 <body>
-
     <header>
         <nav class="navbar">
-            <a href="#hero" class="nav-logo spa-link"> <!-- spa-link triggers JS nav -->
+            <a href="#hero" class="nav-logo spa-link">
                 <img src="./ji.jpg" alt="სტილის სავანე ლოგო">
                 <span>სტილის სავანე</span>
             </a>
             <ul class="nav-menu">
-                <!-- Mark 'Home' as active initially -->
                 <li class="nav-item"><a href="#hero" class="nav-link spa-link active">მთავარი</a></li>
                 <li class="nav-item"><a href="#services" class="nav-link spa-link">სერვისები</a></li>
                 <li class="nav-item"><a href="#booking" class="nav-link spa-link">დაჯავშნა</a></li>
@@ -49,10 +32,7 @@
         </nav>
     </header>
 
-    <!-- Main content area where sections are switched -->
     <main id="main-content">
-
-        <!-- Hero Section (Home) - Visible on Load -->
         <section id="hero" class="hero-section page-section active-section">
             <div class="hero-content">
                 <h1>ვქმნით თავდაჯერებულობას, თითოეული შეჭრით</h1>
@@ -61,7 +41,6 @@
             </div>
         </section>
 
-        <!-- Services Section - Hidden on Load -->
         <section id="services" class="content-section page-section">
             <h2 class="section-title">ჩვენი სერვისები</h2>
             <div class="service-container">
@@ -83,70 +62,68 @@
                     <p>უწყვეტი გადასვლები თანამედროვე, სუფთა იერისთვის.</p>
                     <small class="service-duration">(~ 45 წუთი)</small>
                 </div>
-                 <div class="service-card">
+                <div class="service-card">
                     <i class="fas fa-shower service-icon"></i>
                     <h3>განახლება და დავარცხნა</h3>
                     <p>გამამხნევებელი დაბანა და ექსპერტული სტილიზაცია.</p>
-                     <small class="service-duration">(~ 30 წუთი)</small>
+                    <small class="service-duration">(~ 30 წუთი)</small>
                 </div>
-                 <div class="service-card">
+                <div class="service-card">
                     <i class="fas fa-tint service-icon"></i>
-                    <h3>თმის ტონირება (შენიღბვა)</h3> <!-- Updated Georgian name slightly -->
+                    <h3>თმის ტონირება (შენიღბვა)</h3>
                     <p>ბუნებრივი ტონები ჭაღარის დასაფარად ან სტილის ხაზგასასმელად.</p>
                     <small class="service-duration">(~ 1 საათი)</small>
                 </div>
-                 <div class="service-card">
-                    <i class="fas fa-users service-icon"></i> <!-- Changed Icon -->
-                    <h3>მამა-შვილის შეჭრა</h3> <!-- Example Service Name -->
+                <div class="service-card">
+                    <i class="fas fa-users service-icon"></i>
+                    <h3>მამა-შვილის შეჭრა</h3>
                     <p>ერთობლივი ვიზიტი და სტილი განსაკუთრებული კავშირისთვის.</p>
                     <small class="service-duration">(~ 1.5 საათი)</small>
                 </div>
             </div>
         </section>
 
-        <!-- Booking Section - Hidden on Load -->
         <section id="booking" class="content-section unique-booking alt-bg page-section">
-             <div class="booking-layout-wrapper">
+            <div class="booking-layout-wrapper">
                 <div class="booking-info-panel">
                     <h2 class="section-title">დაჯავშნე შენი დრო</h2>
-                     <p>აირჩიეთ სერვისი, სასურველი თარიღი და ხელმისაწვდომი დრო ქვემოთ. შეავსეთ თქვენი მონაცემები მოთხოვნის დასასრულებლად.</p>
+                    <p>აირჩიეთ სერვისი, სასურველი თარიღი და ხელმისაწვდომი დრო ქვემოთ. შეავსეთ თქვენი მონაცემები მოთხოვნის დასასრულებლად.</p>
                     <hr>
                     <h4>ჯავშნის პოლიტიკა</h4>
-                     <p class="booking-policy-text">
+                    <p class="booking-policy-text">
                         მოთხოვნის შემდეგ მალევე მიიღებთ დამადასტურებელ ელ. ფოსტას. გაუქმების ან დროის შეცვლისთვის გთხოვთ შეგვატყობინოთ 24 საათით ადრე, რათა თავიდან აიცილოთ შესაძლო საფასური. გთხოვთ მობრძანდეთ ვიზიტამდე 5 წუთით ადრე.
                     </p>
                     <i class="fas fa-calendar-check booking-icon-bg"></i>
                 </div>
                 <div class="booking-form-wrapper">
-                     <form id="booking-form" class="booking-form">
-                         <div class="form-group">
-                                <label for="service">სერვისი:</label>
-                                <select id="service" name="service" required>
-                                     <option value="" disabled selected>აირჩიეთ...</option>
-                                     <!-- Populate options based on services above -->
-                                     <option value="ზუსტი თმის შეჭრა">ზუსტი თმის შეჭრა</option>
-                                     <option value="წვერის მოდელირება">წვერის მოდელირება</option>
-                                     <option value="მკვეთრი გადაყვანა">მკვეთრი გადაყვანა</option>
-                                     <option value="განახლება და დავარცხნა">განახლება და დავარცხნა</option>
-                                     <option value="თმის ტონირება">თმის ტონირება (შენიღბვა)</option>
-                                     <option value="მამა-შვილის შეჭრა">მამა-შვილის შეჭრა</option>
-                                     <option value="შეჭრა და წვერის კომბო">შეჭრა და წვერის კომბო (მოკლე)</option> <!-- Example Combo -->
-                                 </select>
-                            </div>
-                         <div class="form-row">
-                             <div class="form-group half-width">
+                    <form id="booking-form" class="booking-form">
+                        <div class="form-group">
+                            <label for="service">სერვისი:</label>
+                            <select id="service" name="service" required>
+                                <option value="" disabled selected>აირჩიეთ...</option>
+                                <option value="ზუსტი თმის შეჭრა">ზუსტი თმის შეჭრა</option>
+                                <option value="წვერის მოდელირება">წვერის მოდელირება</option>
+                                <option value="მკვეთრი გადაყვანა">მკვეთრი გადაყვანა</option>
+                                <option value="განახლება და დავარცხნა">განახლება და დავარცხნა</option>
+                                <option value="თმის ტონირება">თმის ტონირება (შენიღბვა)</option>
+                                <option value="მამა-შვილის შეჭრა">მამა-შვილის შეჭრა</option>
+                                <option value="შეჭრა და წვერის კომბო">შეჭრა და წვერის კომბო (მოკლე)</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half-width">
                                 <label for="date">თარიღი:</label>
                                 <input type="date" id="date" name="date" required min="">
-                             </div>
+                            </div>
                             <div class="form-group half-width">
-                                 <label for="time-slots-label">ხელმისაწვდომი დროები:</label>
+                                <label for="time-slots-label">ხელმისაწვდომი დროები:</label>
                                 <div id="time-slots" class="time-slot-container">
                                     <p class="time-slot-placeholder">აირჩიეთ თარიღი დროების სანახავად</p>
                                 </div>
-                             </div>
+                            </div>
                         </div>
                         <input type="hidden" id="selected-time" name="selected_time" value="" required>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label for="name">სრული სახელი:</label>
                             <input type="text" id="name" name="name" placeholder="შეიყვანეთ თქვენი სრული სახელი" required>
                         </div>
@@ -154,53 +131,51 @@
                             <label for="email">ელ. ფოსტა:</label>
                             <input type="email" id="email" name="email" placeholder="თქვენ@მაგალითი.com" required>
                         </div>
-                         <div class="form-group">
-                             <label for="phone">ტელეფონის ნომერი (სურვილისამებრ):</label>
+                        <div class="form-group">
+                            <label for="phone">ტელეფონის ნომერი (სურვილისამებრ):</label>
                             <input type="tel" id="phone" name="phone" placeholder="მაგ., 555-123-456">
                         </div>
                         <button type="submit" class="cta-button full-width-button">ჯავშნის მოთხოვნა</button>
-                         <div id="booking-confirmation-message" style="display: none;"></div>
-                     </form>
-                 </div>
-             </div>
-        </section>
-
-        <!-- Contact Section - Hidden on Load -->
-        <section id="contact" class="content-section unique-contact page-section">
-             <div class="contact-layout-wrapper">
-                  <div class="contact-form-wrapper">
-                    <h2 class="section-title">დაგვიკავშირდით</h2>
-                     <form id="contact-form" class="contact-form">
-                        <p class="form-description">კითხვები გაქვთ? გამოიყენეთ ქვემოთ მოცემული ფორმა ან დაგვირეკეთ პირდაპირ.</p>
-                        <div class="form-group">
-                             <label for="contact-name">თქვენი სახელი:</label>
-                             <input type="text" id="contact-name" name="contact_name" required placeholder="სრული სახელი">
-                         </div>
-                        <div class="form-group">
-                             <label for="contact-email">თქვენი ელ. ფოსტა:</label>
-                             <input type="email" id="contact-email" name="contact_email" required placeholder="თქვენ@მაგალითი.com">
-                         </div>
-                         <div class="form-group">
-                             <label for="contact-message">თქვენი შეტყობინება:</label>
-                            <textarea id="contact-message" name="contact_message" rows="5" required placeholder="დაწერეთ თქვენი შეტყობინება აქ..."></textarea>
-                        </div>
-                        <button type="submit" class="cta-button full-width-button">შეტყობინების გაგზავნა</button>
-                         <div id="contact-confirmation-message" style="display: none;"></div>
+                        <div id="booking-confirmation-message" style="display: none;"></div>
                     </form>
-                 </div>
-                 <div class="contact-info-panel">
-                     <h3>გვესტუმრეთ</h3>
-                     <p>სტილის ქუჩა 123,<br> გრუმინგტონი, ST 45678</p>
-                     <h3>დაგვირეკეთ</h3>
-                     <p>(555) 123-4567</p>
-                     <h3>სამუშაო საათები</h3>
-                     <p>სამ-პარ: 9:00 - 19:00<br>შაბ: 10:00 - 17:00<br>კვი-ორ: დაკეტილია</p>
-                     <i class="fas fa-map-marker-alt contact-icon-bg"></i>
-                 </div>
+                </div>
             </div>
         </section>
 
-    </main> <!-- /#main-content -->
+        <section id="contact" class="content-section unique-contact page-section">
+            <div class="contact-layout-wrapper">
+                <div class="contact-form-wrapper">
+                    <h2 class="section-title">დაგვიკავშირდით</h2>
+                    <form id="contact-form" class="contact-form">
+                        <p class="form-description">კითხვები გაქვთ? გამოიყენეთ ქვემოთ მოცემული ფორმა ან დაგვირეკეთ პირდაპირ.</p>
+                        <div class="form-group">
+                            <label for="contact-name">თქვენი სახელი:</label>
+                            <input type="text" id="contact-name" name="contact_name" required placeholder="სრული სახელი">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-email">თქვენი ელ. ფოსტა:</label>
+                            <input type="email" id="contact-email" name="contact_email" required placeholder="თქვენ@მაგალითი.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-message">თქვენი შეტყობინება:</label>
+                            <textarea id="contact-message" name="contact_message" rows="5" required placeholder="დაწერეთ თქვენი შეტყობინება აქ..."></textarea>
+                        </div>
+                        <button type="submit" class="cta-button full-width-button">შეტყობინების გაგზავნა</button>
+                        <div id="contact-confirmation-message" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="contact-info-panel">
+                    <h3>გვესტუმრეთ</h3>
+                    <p>სტილის ქუჩა 123,<br> გრუმინგტონი, ST 45678</p>
+                    <h3>დაგვირეკეთ</h3>
+                    <p>(555) 123-4567</p>
+                    <h3>სამუშაო საათები</h3>
+                    <p>სამ-პარ: 9:00 - 19:00<br>შაბ: 10:00 - 17:00<br>კვი-ორ: დაკეტილია</p>
+                    <i class="fas fa-map-marker-alt contact-icon-bg"></i>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <footer class="unique-footer">
         <div class="footer-content">
@@ -215,12 +190,8 @@
                 <a href="#" aria-label="ტვიტერი"><i class="fab fa-twitter"></i></a>
             </div>
         </div>
-
     </footer>
 
     <script src="Newshop.js"></script>
-
-
-
 </body>
 </html>
