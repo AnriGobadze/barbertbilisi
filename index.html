@@ -34,12 +34,35 @@
 
     <main id="main-content">
         <section id="hero" class="hero-section page-section active-section">
-            <div class="hero-content">
-                <h1>ვქმნით თავდაჯერებულობას, თითოეული შეჭრით</h1>
-                <p>განიცადეთ პერსონალური მოვლა თანამედროვე, დახვეწილ ატმოსფეროში. დაჯავშნეთ თქვენი ვიზიტი დღესვე.</p>
-                <a href="#booking" class="cta-button spa-link">დაჯავშნე შენი დრო</a>
+    <div class="hero-main-container">
+        <div class="hero-logo-container">
+        </div>
+        <div class="hero-info-layout">
+            <div class="info-column">
+                <h2 class="dropdown-brand-name">სტილის სავანე</h2>
+                <p class="dropdown-address">22 ბახტრიონის ქ.</p>
+                <p class="dropdown-hours">ორშ–კვი: 11:00–21:00</p>
+                <div class="dropdown-contact-block">
+                    <h3>კონტაქტი</h3>
+                    <p><a href="tel:+995558436368" class="contact-link-decorated">+995 558 43-63-68</a></p>
+                </div>
             </div>
-        </section>
+            <div class="map-column">
+                    <h3>ლოკაცია</h3>
+                    <p class="dropdown-address-map">22 ბახტრიონის ქ.</p>
+                <div class="map-embed-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4001.5618461553236!2d44.78060625531713!3d41.71705695503603!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x404472d5172595c9%3A0xfa08c1d44deaefce!2sRESCHOOL!5e1!3m2!1sen!2sge!4v1746986185002!5m2!1sen!2sge" 
+                        width="100%" height="250" style="border:0;" 
+                        allowfullscreen="" loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="სალონის ლოკაცია Google Maps-ზე"></iframe>
+                </div>
+                <a href="#booking" class="cta-button hero-book-button spa-link">დაჯავშნე</a>
+            </div>
+        </div>
+    </div>
+</section>
 
         <section id="services" class="content-section page-section">
             <h2 class="section-title">ჩვენი სერვისები</h2>
@@ -87,7 +110,7 @@
             <div class="booking-layout-wrapper">
                 <div class="booking-info-panel">
                     <h2 class="section-title">დაჯავშნე შენი დრო</h2>
-                    <p>აირჩიეთ სერვისი, სასურველი თარიღი და ხელმისაწვდომი დრო ქვემოთ. შეავსეთ თქვენი მონაცემები მოთხოვნის დასასრულებლად.</p>
+                    <p>აირჩიეთ სასურველი თარიღი, დრო და სერვისი. შეავსეთ თქვენი მონაცემები მოთხოვნის დასასრულებლად.</p>
                     <hr>
                     <h4>ჯავშნის პოლიტიკა</h4>
                     <p class="booking-policy-text">
@@ -96,47 +119,80 @@
                     <i class="fas fa-calendar-check booking-icon-bg"></i>
                 </div>
                 <div class="booking-form-wrapper">
+                    <button id="booking-back-button" type="button" style="display: none;">
+                        <i class="fas fa-chevron-left"></i> უკან
+                    </button>
+                    
                     <form id="booking-form" class="booking-form">
-                        <div class="form-group">
-                            <label for="service">სერვისი:</label>
-                            <select id="service" name="service" required>
-                                <option value="" disabled selected>აირჩიეთ...</option>
-                                <option value="ზუსტი თმის შეჭრა">ზუსტი თმის შეჭრა</option>
-                                <option value="წვერის მოდელირება">წვერის მოდელირება</option>
-                                <option value="მკვეთრი გადაყვანა">მკვეთრი გადაყვანა</option>
-                                <option value="განახლება და დავარცხნა">განახლება და დავარცხნა</option>
-                                <option value="თმის ტონირება">თმის ტონირება (შენიღბვა)</option>
-                                <option value="მამა-შვილის შეჭრა">მამა-შვილის შეჭრა</option>
-                                <option value="შეჭრა და წვერის კომბო">შეჭრა და წვერის კომბო (მოკლე)</option>
-                            </select>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group half-width">
-                                <label for="date">თარიღი:</label>
-                                <input type="date" id="date" name="date" required min="">
-                            </div>
-                            <div class="form-group half-width">
-                                <label for="time-slots-label">ხელმისაწვდომი დროები:</label>
-                                <div id="time-slots" class="time-slot-container">
-                                    <p class="time-slot-placeholder">აირჩიეთ თარიღი დროების სანახავად</p>
+                        <div id="booking-step-container">
+
+                            <div id="date-selection-step" class="booking-step active-step">
+                                <h3 class="booking-step-title">აირჩიეთ თარიღი</h3>
+                                <div id="month-year-header">
+                                    <button type="button" id="prev-month-btn" class="month-nav-btn"><i class="fas fa-chevron-left"></i></button>
+                                    <span id="current-month-year-display">მაისი 2024</span>
+                                    <button type="button" id="next-month-btn" class="month-nav-btn"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                                <div id="calendar-days-header">
+                                </div>
+                                <div id="calendar-grid-main">
                                 </div>
                             </div>
+
+                            <div id="time-selection-step" class="booking-step">
+                                <h3 class="booking-step-title">აირჩიეთ დრო <span id="selected-date-display-header"></span></h3>
+                                <div id="time-slots-categorized">
+                                    <div class="time-category">
+                                        <h4>დილა</h4>
+                                        <div id="morning-slots" class="time-slot-category-grid"></div>
+                                    </div>
+                                    <div class="time-category">
+                                        <h4>შუადღე</h4>
+                                        <div id="day-slots" class="time-slot-category-grid"></div>
+                                    </div>
+                                    <div class="time-category">
+                                        <h4>საღამო</h4>
+                                        <div id="evening-slots" class="time-slot-category-grid"></div>
+                                    </div>
+                                    <p id="no-time-slots-message" class="time-slot-placeholder" style="display:none;">ამ დღეს თავისუფალი დროები არ მოიძებნა.</p>
+                                </div>
+                            </div>
+
+                            <div id="service-selection-step" class="booking-step">
+                                <h3 class="booking-step-title">აირჩიეთ სერვისი</h3>
+                                <div id="service-list-container">
+                                </div>
+                            </div>
+                            
+                            <div id="user-details-step" class="booking-step">
+                                <h3 class="booking-step-title">შეიყვანეთ თქვენი მონაცემები</h3>
+                                <div class="form-group summary-group">
+                                    <label>არჩეული:</label>
+                                    <p id="booking-summary-display">სერვისი, თარიღი, დრო</p>
+                                </div>
+                                <hr class="summary-divider">
+                                <div class="form-group">
+                                    <label for="name">სრული სახელი:</label>
+                                    <input type="text" id="name" name="name" placeholder="შეიყვანეთ თქვენი სრული სახელი" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">ელ. ფოსტა:</label>
+                                    <input type="email" id="email" name="email" placeholder="თქვენ@მაგალითი.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">ტელეფონის ნომერი (სურვილისამებრ):</label>
+                                    <input type="tel" id="phone" name="phone" placeholder="მაგ., 555-123-456">
+                                </div>
+                                <button type="submit" class="cta-button full-width-button">ჯავშნის მოთხოვნა</button>
+                            </div>
                         </div>
-                        <input type="hidden" id="selected-time" name="selected_time" value="" required>
-                        <div class="form-group">
-                            <label for="name">სრული სახელი:</label>
-                            <input type="text" id="name" name="name" placeholder="შეიყვანეთ თქვენი სრული სახელი" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">ელ. ფოსტა:</label>
-                            <input type="email" id="email" name="email" placeholder="თქვენ@მაგალითი.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">ტელეფონის ნომერი (სურვილისამებრ):</label>
-                            <input type="tel" id="phone" name="phone" placeholder="მაგ., 555-123-456">
-                        </div>
-                        <button type="submit" class="cta-button full-width-button">ჯავშნის მოთხოვნა</button>
-                        <div id="booking-confirmation-message" style="display: none;"></div>
+                        
+                        <input type="hidden" id="selected-date-hidden" name="selected_date_hidden">
+                        <input type="hidden" id="selected-time-hidden" name="selected_time_hidden">
+                        <input type="hidden" id="selected-service-value-hidden" name="selected_service_value_hidden">
+                        <input type="hidden" id="selected-service-text-hidden" name="selected_service_text_hidden">
+
+                        <div id="booking-confirmation-message" class="confirmation-message" style="display: none;"></div>
                     </form>
                 </div>
             </div>
@@ -167,10 +223,15 @@
                 <div class="contact-info-panel">
                     <h3>გვესტუმრეთ</h3>
                     <p>სტილის ქუჩა 123,<br> გრუმინგტონი, ST 45678</p>
+                    <p><i>(თუ გსურთ, აქ შეგიძლიათ გაიმეოროთ ბახტრიონის ქ. 22)</i></p>
                     <h3>დაგვირეკეთ</h3>
-                    <p>(555) 123-4567</p>
+                    <p><a href="tel:+995558436368" class="contact-link-decorated">+995 558 43-63-68</a></p>
+                    <p><i>(თუ გსურთ, ეს ინფორმაცია შეიძლება დარჩეს აქაც.)</i></p>
                     <h3>სამუშაო საათები</h3>
-                    <p>სამ-პარ: 9:00 - 19:00<br>შაბ: 10:00 - 17:00<br>კვი-ორ: დაკეტილია</p>
+                    <p>სამ-პარ: 9:00 - 19:00 (მაგალითი)</p>
+                    <p>შაბ: 10:00 - 17:00 (მაგალითი)</p>
+                    <p><i>(აქ შეგიძლიათ განაახლოთ 11:00–21:00, ორშ-კვი, როგორც ჰიროს დროპდაუნშია)</i></p>
+                    <p>კვი-ორ: დაკეტილია (მაგალითი - შეუსაბამოა, თუ ორშ-კვი მუშაობთ)</p>
                     <i class="fas fa-map-marker-alt contact-icon-bg"></i>
                 </div>
             </div>
@@ -183,7 +244,7 @@
                 <img src="./ji.jpg" alt="სტილის სავანე მინი ლოგო">
                 <span>სტილის სავანე</span>
             </div>
-            <p class="footer-copy">© 2024 სტილის სავანე. პრემიუმ მოვლის გამოცდილება.</p> 
+            <p class="footer-copy">© <span id="current-year">2024</span> სტილის სავანე. პრემიუმ მოვლის გამოცდილება.</p> 
             <div class="social-icons-footer">
                 <a href="#" aria-label="ფეისბუქი"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" aria-label="ინსტაგრამი"><i class="fab fa-instagram"></i></a>

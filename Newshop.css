@@ -17,6 +17,8 @@
     --section-padding-v: 40px;
     --section-padding-v-unique: 60px;
     --border-light: rgba(255, 255, 255, 0.1);
+    --disabled-color: #555;
+    --available-indicator: var(--accent-color); /* For calendar days with slots */
 }
 
 *, *::before, *::after {
@@ -68,10 +70,10 @@ a:hover {
     animation: fadeInSection 0.6s ease-out;
 }
 
-#hero.active-section {
+#hero.active-section { /* KEEPING THIS GENERAL ACTIVE HERO STYLE */
     display: flex;
     min-height: calc(100vh - var(--navbar-height));
-    padding: var(--section-padding-v) var(--section-padding-h);
+    /* padding: var(--section-padding-v) var(--section-padding-h); -- This will be controlled by new hero specific styles below */
     align-items: center;
     justify-content: center;
 }
@@ -125,6 +127,7 @@ a:hover {
     margin-bottom: 20px;
 }
 
+
 .cta-button {
     display: inline-block;
     background-color: var(--accent-color);
@@ -154,6 +157,7 @@ a:hover {
     width: 100%;
 }
 
+/* --- Navbar & Hero --- */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -169,7 +173,6 @@ a:hover {
     backdrop-filter: blur(5px);
     border-bottom: 1px solid var(--border-light);
 }
-
 .nav-logo {
     display: flex;
     align-items: center;
@@ -177,7 +180,6 @@ a:hover {
     color: var(--secondary-color);
     transition: transform var(--transition-speed);
 }
-
 .nav-logo img {
     height: 45px;
     width: auto;
@@ -185,183 +187,193 @@ a:hover {
     border-radius: 50%;
     border: 1px solid var(--accent-color);
 }
-
 .nav-logo span {
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: 1px;
     color: var(--accent-color);
 }
-
-.nav-logo:hover {
-    transform: scale(1.05);
-}
-
-.nav-menu {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.nav-item {
-    margin-left: 30px;
-}
-
+.nav-logo:hover { transform: scale(1.05); }
+.nav-menu { display: flex; list-style: none; margin: 0; padding: 0; }
+.nav-item { margin-left: 30px; }
 .nav-link {
-    color: var(--secondary-color);
-    text-decoration: none;
-    font-weight: 400;
-    position: relative;
-    padding: 5px 0;
-    transition: color var(--transition-speed);
+    color: var(--secondary-color); text-decoration: none; font-weight: 400;
+    position: relative; padding: 5px 0; transition: color var(--transition-speed);
 }
-
 .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: var(--accent-color);
+    content: ''; position: absolute; bottom: -2px; left: 0;
+    width: 0; height: 2px; background-color: var(--accent-color);
     transition: width var(--transition-speed);
 }
-
-.nav-link:hover {
-    color: var(--accent-color);
-}
-
-.nav-link:hover::after {
-    width: 100%;
-}
-
-.nav-link.active {
-    color: var(--accent-color);
-    font-weight: 600;
-}
-
-.nav-link.active::after {
-    width: 100%;
-}
-
+.nav-link:hover { color: var(--accent-color); }
+.nav-link:hover::after { width: 100%; }
+.nav-link.active { color: var(--accent-color); font-weight: 600; }
+.nav-link.active::after { width: 100%; }
 .book-now-nav {
-    background-color: var(--accent-color);
-    color: var(--primary-color) !important;
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-weight: 600;
+    background-color: var(--accent-color); color: var(--primary-color) !important;
+    padding: 8px 18px; border-radius: 20px; font-weight: 600;
     transition: background-color var(--transition-speed), transform 0.2s ease-out;
 }
-
 .book-now-nav:hover {
-    background-color: var(--hover-accent);
-    color: var(--primary-color) !important;
+    background-color: var(--hover-accent); color: var(--primary-color) !important;
     transform: scale(1.05);
 }
-
-.book-now-nav::after {
-    display: none;
-}
-
-.book-now-nav.active {
-    box-shadow: 0 0 8px var(--hover-accent);
-}
-
-.hamburger {
-    display: none;
-    cursor: pointer;
-}
-
+.book-now-nav::after { display: none; }
+.book-now-nav.active { box-shadow: 0 0 8px var(--hover-accent); }
+.hamburger { display: none; cursor: pointer; }
 .bar {
-    display: block;
-    width: 25px;
-    height: 3px;
-    margin: 5px auto;
-    background-color: var(--secondary-color);
-    transition: all 0.3s ease-in-out;
+    display: block; width: 25px; height: 3px; margin: 5px auto;
+    background-color: var(--secondary-color); transition: all 0.3s ease-in-out;
 }
 
-.hero-section {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1599351594959-a3b9ba4552c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8YmFyYmVyc2hvcHx8fHx8fDE2ODAwMDAwMDA&ixlib=rb-4.0.3&q=80&w=1080') no-repeat center center/cover;
+/* === MODIFIED HERO SECTION STYLES (for always visible info) === */
+.hero-section { /* Base style for background etc. */
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.85)), url('https://images.unsplash.com/photo-1599351594959-a3b9ba4552c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8YmFyYmVyc2hvcHx8fHx8fDE2ODAwMDAwMDA&ixlib=rb-4.0.3&q=80&w=1080') no-repeat center center/cover;
     background-attachment: fixed;
     color: var(--secondary-color);
+    text-align: center; 
+    /* #hero.active-section handles display:flex, min-height, align, justify */
+    padding: 20px var(--section-padding-h); /* Consistent padding with .page-section */
+    overflow-y: auto; /* Allow scroll if content is too tall */
 }
 
-.hero-content h1 {
-    font-size: clamp(2.5rem, 7vw, 3.5rem);
-    margin-bottom: 20px;
-    color: var(--secondary-color);
-    font-weight: 700;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-}
-
-.hero-content p {
-    font-size: clamp(1.1rem, 3vw, 1.3rem);
-    margin-bottom: 30px;
-    color: #eee;
-    font-weight: 300;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.service-container {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    text-align: center;
-}
-
-.service-card {
-    background-color: var(--card-bg);
-    padding: 30px 20px;
-    border-radius: 10px;
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+.hero-main-container {
     display: flex;
     flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    width: 100%;
+    max-width: 900px; /* Max width for the info layout */
+    margin: 20px auto; /* Some top/bottom margin if content doesn't fill screen */
 }
 
-.service-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+.hero-logo-container {
+    text-align: center; 
+    margin-bottom: 25px; 
 }
 
-.service-icon {
-    font-size: 3rem;
+.hero-brand-name {
+    font-size: clamp(2.8rem, 8vw, 4.5rem);
     color: var(--accent-color);
-    margin-bottom: 10px;
-    display: block;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+    margin: 0;
+    line-height: 1.2;
 }
 
-.service-card h3 {
-    font-size: 1.5rem;
-    color: var(--secondary-color);
-    margin-bottom: 10px;
+.hero-info-layout {
+    background-color: rgba(26, 26, 26, 0.92);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    width: 100%;
+    padding: 30px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    text-align: left;
 }
 
-.service-card p {
+.info-column, .map-column {
+    flex: 1;
+    min-width: 280px; 
+}
+
+.dropdown-brand-name { /* Using same class name as before for consistency in the sub-elements */
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.dropdown-address,
+.dropdown-hours {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.dropdown-contact-block {
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+.dropdown-contact-block h3,
+.map-column h3 {
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 5px;
+}
+.dropdown-address-map {
     font-size: 0.95rem;
     color: var(--text-muted);
-    margin-bottom: 15px;
-    flex-grow: 1;
+    margin-bottom: 12px;
 }
 
-.service-duration {
+.contact-link-decorated {
+    color: var(--secondary-color);
+    font-weight: 500;
+    font-size: 1.05rem;
+}
+.contact-link-decorated:hover {
+    color: var(--hover-accent);
+}
+
+.map-embed-container {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    border: 1px solid var(--input-border);
+}
+.map-embed-container iframe {
     display: block;
-    font-size: 0.85rem;
-    color: var(--text-light-muted);
-    font-style: italic;
-    margin-top: auto;
-    padding-top: 10px;
 }
 
+.hero-book-button { /* Specific CTA button for hero if needed */
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 1.05rem;
+}
+/* === END OF MODIFIED HERO SECTION STYLES === */
+
+
+/* --- Services Section --- */
+.service-container {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px; text-align: center;
+}
+.service-card {
+    background-color: var(--card-bg); padding: 30px 20px; border-radius: 10px;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex; flex-direction: column;
+}
+.service-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); }
+.service-icon { font-size: 3rem; color: var(--accent-color); margin-bottom: 10px; display: block; }
+.service-card h3 { font-size: 1.5rem; color: var(--secondary-color); margin-bottom: 10px; }
+.service-card p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px; flex-grow: 1; }
+.service-duration {
+    display: block; font-size: 0.85rem; color: var(--text-light-muted);
+    font-style: italic; margin-top: auto; padding-top: 10px;
+}
+
+/* --- Booking Section --- */
 .booking-layout-wrapper,
 .contact-layout-wrapper {
-    gap: 5%;
-    align-items: stretch;
-    padding: 0;
+    gap: 5%; align-items: stretch; padding: 0;
 }
 .booking-info-panel, .contact-info-panel {
     flex-basis: 35%; background-color: var(--card-bg); padding: 35px; border-radius: 8px;
@@ -369,7 +381,7 @@ a:hover {
     display: flex; flex-direction: column;
     position: relative;
 }
-.contact-info-panel {
+.contact-info-panel { /* Original rule */
     background-color: transparent; border-left: 3px solid var(--accent-color);
     padding-left: 30px;
 }
@@ -382,12 +394,278 @@ a:hover {
     pointer-events: none;
 }
 .contact-icon-bg { bottom: 20px; right: 20px; }
-.booking-form-wrapper, .contact-form-wrapper {
-    flex-basis: 60%; background-color: var(--card-bg); padding: 40px; border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+
+.booking-form-wrapper {
+    flex-basis: 60%; background-color: var(--card-bg); padding: 30px; border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;
 }
-.form-row { display: flex; gap: 20px; margin-bottom: 20px; }
-.form-group.half-width { flex: 1; margin-bottom: 0; }
+
+#booking-back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color var(--transition-speed);
+    font-weight: 500;
+    display: flex; /* Added for alignment */
+    align-items: center; /* Added for alignment */
+}
+#booking-back-button:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+#booking-back-button i {
+    margin-right: 5px;
+}
+
+
+.booking-step { display: none; }
+.booking-step.active-step {
+    display: block;
+    animation: fadeInStep 0.5s ease-out;
+}
+@keyframes fadeInStep {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.booking-step-title {
+    text-align: center;
+    color: var(--accent-color);
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* Calendar Styles (Unchanged from your last provided version) */
+#month-year-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+#current-month-year-display {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+.month-nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+}
+.month-nav-btn:hover:not(:disabled) { /* Updated to ensure disabled hover doesn't change */
+    color: var(--hover-accent);
+}
+.month-nav-btn:disabled {
+    color: var(--disabled-color);
+    cursor: not-allowed;
+}
+
+#calendar-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-light-muted);
+    margin-bottom: 10px;
+    padding: 0 5px;
+}
+#calendar-days-header span {
+    font-weight: 600;
+}
+
+#calendar-grid-main {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px; /* This was your original good gap */
+}
+.calendar-day { /* THIS IS THE CALENDAR DAY STYLE YOU LIKED */
+    background-color: var(--input-bg);
+    color: var(--secondary-color);
+    border: 1px solid var(--input-border);
+    aspect-ratio: 1 / 1; /* Square cells */
+    padding: 0; /* If using aspect-ratio and flex to center */
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.9rem; /* Compact font */
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), transform 0.1s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.calendar-day:hover:not(.disabled):not(.empty) {
+    background-color: #4a4a4a;
+    border-color: var(--hover-accent);
+    transform: scale(1.03);
+}
+.calendar-day.empty {
+    background-color: transparent;
+    border-color: transparent;
+    cursor: default;
+}
+.calendar-day.disabled {
+    background-color: var(--primary-color); /* or var(--input-bg) for consistency */
+    color: var(--disabled-color);
+    cursor: not-allowed;
+    border-color: #333;
+}
+.calendar-day.disabled:hover {
+    transform: none;
+}
+.calendar-day.today {
+    border-color: var(--accent-color);
+    font-weight: bold;
+}
+.calendar-day.selected {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    border-color: var(--hover-accent);
+    font-weight: bold;
+}
+.calendar-day.has-slots::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; /* Adjusted for cell size */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px; /* Adjusted for cell size */
+    height: 5px; /* Adjusted for cell size */
+    background-color: var(--available-indicator);
+    border-radius: 50%;
+}
+.calendar-day.selected.has-slots::after {
+    background-color: var(--primary-color);
+}
+
+
+/* Time Slot Styles (Unchanged from your last provided version) */
+#time-selection-step h3 #selected-date-display-header {
+    font-weight: normal;
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-left: 5px; /* My addition for spacing */
+}
+#time-slots-categorized {
+    margin-top: 20px;
+}
+.time-category {
+    margin-bottom: 20px;
+}
+.time-category h4 {
+    color: var(--accent-color);
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 8px;
+}
+.time-slot-category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); /* Your desired minmax */
+    gap: 8px; /* Your desired gap */
+}
+.time-slot-btn {
+    padding: 9px; /* Your desired padding */
+    font-size: 0.85rem; /* Your desired font-size */
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--secondary-color);
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), transform 0.1s ease-out;
+}
+.time-slot-btn:hover:not(.disabled) {
+    background-color: #4a4a4a;
+    border-color: #666;
+}
+.time-slot-btn.selected {
+    background-color: var(--accent-color);
+    border-color: var(--hover-accent);
+    color: var(--primary-color);
+    font-weight: 600;
+    transform: scale(1.05);
+}
+.time-slot-btn.disabled {
+    background-color: var(--input-bg); /* Updated for consistency */
+    color: var(--disabled-color); /* Clearer disabled state */
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+.time-slot-placeholder { font-size: 0.9rem; color: #888; text-align: center; font-style: italic; padding: 10px 0;}
+
+
+/* Service Selection Styles (Unchanged) */
+#service-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+.service-option-btn {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--secondary-color);
+    border-radius: 4px;
+    text-align: left;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+.service-option-btn:hover {
+    background-color: #4a4a4a;
+    border-color: #666;
+}
+.service-option-btn.selected {
+    background-color: var(--accent-color);
+    border-color: var(--hover-accent);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+
+/* User Details Step & Summary (Unchanged) */
+#user-details-step .summary-group {
+    margin-bottom: 15px;
+    background-color: rgba(255, 255, 255, 0.03);
+    padding: 12px 15px;
+    border-radius: 4px;
+}
+#user-details-step .summary-group label {
+    font-weight: 600;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+}
+#user-details-step #booking-summary-display {
+    color: var(--secondary-color);
+    font-size: 1rem;
+    line-height: 1.4;
+}
+.summary-divider {
+    border: none;
+    height: 1px;
+    background-color: var(--border-light);
+    margin: 20px 0;
+}
+
+/* Original Form Group styling from before (Unchanged) */
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--accent-color); font-size: 0.9rem; text-transform: uppercase; }
 .form-group input, .form-group select, .form-group textarea {
@@ -397,27 +675,42 @@ a:hover {
     transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 .form-group input::placeholder, .form-group textarea::placeholder { color: #888; opacity: 1; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2); }
-.form-group select {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+.form-group select { 
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23d4af37' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 15px center; background-size: 16px 16px; cursor: pointer;
 }
 .form-group textarea { resize: vertical; min-height: 120px; }
-.form-group input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8) sepia(1) saturate(5) hue-rotate(10deg); cursor: pointer; opacity: 0.7; }
-.form-group input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
-.time-slot-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; min-height: 54px; align-items: center; padding-top: 5px; }
-.time-slot { padding: 8px; font-size: 0.85rem; background-color: #444; border: 1px solid #555; color: var(--secondary-color); border-radius: 4px; cursor: pointer; text-align: center; transition: background-color var(--transition-speed), border-color var(--transition-speed), transform 0.1s ease-out; appearance: none; font-family: inherit; }
-.time-slot:hover { background-color: #555; border-color: #777; }
-.time-slot.selected { background-color: var(--accent-color); border-color: var(--hover-accent); color: var(--primary-color); font-weight: 600; transform: scale(1.05); }
-.time-slot.disabled { background-color: var(--input-bg); color: #777; cursor: not-allowed; opacity: 0.6; }
-.time-slot-placeholder { font-size: 0.9rem; color: #888; padding-left: 5px; grid-column: 1 / -1; text-align: center; font-style: italic; }
+.form-group input[type="text"][readonly],
+.form-group input[type="email"][readonly] { 
+    background-color: #222;
+    cursor: default;
+}
+
+
 .confirmation-message {
     margin-top: 25px; background-color: rgba(60, 179, 113, 0.2); color: #3CB371; border: 1px solid #3CB371;
     padding: 15px; border-radius: 5px; text-align: center; animation: fadeIn 0.5s ease-out;
 }
 .confirmation-message.error { background-color: rgba(220, 20, 60, 0.2); color: #DC143C; border: 1px solid #DC143C; }
-.form-description { text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 1rem; }
 p.booking-policy-text { font-size: 0.9rem; color: #bbb; line-height: 1.5; }
+
+/* --- Contact & Footer (Unchanged from your last provided) --- */
+/* .contact-layout-wrapper styling covered by .booking-layout-wrapper (they share it) */
+.contact-form-wrapper { /* If distinct styles needed for contact form area */
+    flex-basis: 60%; background-color: var(--card-bg); padding: 40px; border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.contact-info-panel { /* If distinct styles needed for contact info area */
+    flex-basis: 35%;
+    background-color: transparent; 
+    border-left: 3px solid var(--accent-color);
+    padding-left: 30px;
+}
+.contact-form-wrapper .form-description { text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 1rem; }
 .unique-footer {
     background: var(--gradient-end); padding: 40px var(--section-padding-h); margin-top: 60px;
     border-top: 2px solid var(--accent-color);
@@ -429,11 +722,13 @@ p.booking-policy-text { font-size: 0.9rem; color: #bbb; line-height: 1.5; }
 .footer-copy { color: var(--text-light-muted); font-size: 0.9rem; text-align: center; flex-grow: 1; }
 .social-icons-footer a { color: var(--text-light-muted); margin-left: 18px; font-size: 1.3rem; transition: color var(--transition-speed), transform var(--transition-speed); display: inline-block; }
 .social-icons-footer a:hover { color: var(--accent-color); transform: translateY(-3px); }
+
+/* --- Responsive (Hero parts modified, rest unchanged from your last provided) --- */
 @media (max-width: 992px) {
-    :root { font-size: 15px; }
-    body { padding-top: 70px; --navbar-height: 70px; }
+    :root { font-size: 15px; --navbar-height: 70px; }
+    body { padding-top: var(--navbar-height); }
     .page-section { padding: 50px 4%; }
-    .section-title { font-size: 2.2rem; }
+    .section-title { font-size: clamp(1.8rem, 4.5vw, 2.2rem); /* Your original responsive */ }
     .nav-menu {
         position: fixed; left: -100%; top: var(--navbar-height);
         flex-direction: column; background-color: rgba(16, 16, 16, 0.98);
@@ -452,76 +747,106 @@ p.booking-policy-text { font-size: 0.9rem; color: #bbb; line-height: 1.5; }
         border-bottom: 1px solid var(--border-light);
     }
     .book-now-nav:hover { background: none; transform: none; color: var(--accent-color) !important; }
-    .book-now-nav.active {
-        color: var(--accent-color) !important;
-        box-shadow: none;
-        font-weight: 600;
-    }
+    .book-now-nav.active { color: var(--accent-color) !important; box-shadow: none; font-weight: 600; }
     .hamburger { display: block; z-index: 1001; position: relative; }
     .hamburger.active .bar:nth-child(2) { opacity: 0; }
     .hamburger.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
     .hamburger.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-    .hero-content h1 { font-size: 3rem; }
-    .hero-content p { font-size: 1.1rem; }
+
+    /* Responsive for MODIFIED Hero */
+    .hero-brand-name { font-size: clamp(2.5rem, 7vw, 3.5rem); }
+    .hero-info-layout { flex-direction: column; gap: 25px; padding: 20px; margin-top: 15px;}
+    .dropdown-brand-name { font-size: 1.6rem; }
+
     .service-container { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+
     .booking-layout-wrapper, .contact-layout-wrapper {
-        flex-direction: column; gap: 40px; padding: 0;
+        flex-direction: column; gap: 40px; padding: 0; /* This ensures it still stacks */
     }
-    .booking-info-panel, .contact-info-panel {
-        flex-basis: auto; width: 100%;
-        position: relative;
+    .booking-info-panel, .contact-info-panel { /* This ensures it still stacks */
+        flex-basis: auto; width: 100%; position: relative;
         top: 0; padding: 25px; align-self: auto;
-        max-height: none;
-        overflow-y: visible;
+        max-height: none; overflow-y: visible;
     }
-    .contact-info-panel {
+    .contact-info-panel { /* This ensures it still stacks correctly */
         border-left: none; border-top: 3px solid var(--accent-color);
         padding: 25px 0 0 0; text-align: center;
     }
     .booking-icon-bg, .contact-icon-bg { display: none; }
-    .booking-form-wrapper, .contact-form-wrapper {
-        flex-basis: auto; width: 100%; padding: 30px;
+    .booking-form-wrapper, .contact-form-wrapper { /* This ensures it still stacks correctly */
+        flex-basis: auto; width: 100%; padding: 25px;
     }
-    .booking-info-panel .section-title, .contact-form-wrapper .section-title { text-align: center; font-size: 2rem; }
+    .booking-info-panel .section-title, .contact-form-wrapper .section-title { /* This ensures it still stacks correctly */
+         text-align: center; font-size: 2rem; 
+    }
+    
+    /* Booking Calendar responsive from your last provided */
+    #booking-back-button { top: 15px; left: 15px; }
+    .booking-step-title { font-size: 1.4rem; margin-bottom: 20px;}
+    #current-month-year-display {font-size: 1.2rem;}
+    .month-nav-btn {font-size: 1.3rem;}
+    /* .calendar-day { font-size: 0.9rem; aspect-ratio: 1 / 1;} Re-confirming your desired sizing here */
+    .time-slot-btn {font-size: 0.85rem; padding: 8px;}
 }
-@media (min-width: 993px) {
+
+@media (min-width: 993px) { /* Desktop Sticky Behavior */
     .booking-info-panel, .contact-info-panel {
         position: sticky;
         top: calc(var(--navbar-height) + 20px);
         align-self: flex-start;
-        max-height: none;
-        overflow-y: visible;
+        max-height: calc(100vh - var(--navbar-height) - 40px); 
+        overflow-y: auto; 
+    }
+     .booking-info-panel { /* Ensure booking panel still has its BG */
         background-color: var(--card-bg);
-    }
-    .contact-info-panel {
-        background-color: transparent;
+     }
+     .contact-info-panel { /* Ensure contact panel still has its transparent BG & border */
+        background-color: transparent; 
         border-left: 3px solid var(--accent-color);
-    }
+     }
 }
-@media (max-width: 576px) {
-    :root { font-size: 14px; }
-    body { padding-top: 65px; --navbar-height: 65px; }
+
+@media (max-width: 576px) { /* Small mobile responsive */
+    :root { font-size: 14px; --navbar-height: 65px; }
+    body { padding-top: var(--navbar-height); }
     .navbar { padding: 0 4%; height: var(--navbar-height); }
     .nav-logo span { font-size: 1.3rem; }
     .nav-logo img { height: 40px; }
     .nav-menu { top: var(--navbar-height); height: calc(100vh - var(--navbar-height)); }
-    .page-section { padding: 40px 4%; min-height: 60vh; }
-    .hero-section { padding-top: 0; }
-    .hero-content h1 { font-size: 2.5rem; }
-    .hero-content p { font-size: 1rem; }
-    .section-title { font-size: 2rem; }
+    .page-section { padding: 40px 4%; min-height: 50vh; }
+
+    /* Responsive for MODIFIED Hero - Small mobile */
+    /* .hero-section { padding-top: 0; -- Old rule not needed with flexbox} */
+    .hero-brand-name { font-size: clamp(2rem, 6vw, 3rem); }
+    .hero-info-layout { padding: 15px; margin-top: 10px; }
+
+
+    .section-title { font-size: clamp(1.6rem, 4vw, 2rem); }
     .cta-button { padding: 10px 25px; font-size: 0.9rem; }
     .service-container { grid-template-columns: 1fr; gap: 25px; }
     .service-card { padding: 25px 15px; }
-    .form-row { flex-direction: column; gap: 0; margin-bottom: 0; }
-    .form-group { margin-bottom: 18px; }
-    .form-group.half-width { margin-bottom: 18px; }
+    
+    /* Booking Form Specifics for small screens (from your last provided) */
+    .booking-form-wrapper { padding: 20px 15px; }
+    #booking-back-button { top: 10px; left: 10px; font-size: 0.85rem;}
+    .booking-step-title { font-size: 1.3rem; margin-bottom: 15px;}
+    #current-month-year-display {font-size: 1.1rem;}
+    .month-nav-btn {font-size: 1.2rem;}
+    #calendar-days-header {font-size: 0.75rem;}
+    #calendar-grid-main {gap: 5px;} /* Your specific gap */
+    .calendar-day { font-size: 0.8rem; aspect-ratio: 1 / 1; /* Your smaller font and aspect ratio */ }
+    .calendar-day.has-slots::after {width: 4px; height: 4px; bottom: 3px;}
+
+    .time-category h4 {font-size: 1rem; margin-bottom: 10px;}
+    .time-slot-category-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; } /* Your minmax & gap */
+    .time-slot-btn { font-size: 0.75rem; padding: 6px;} /* Your padding & font */
+
+    .service-option-btn { padding: 12px 15px; font-size: 0.9rem;}
     .form-group input, .form-group select, .form-group textarea { padding: 12px 15px; }
-    .time-slot-container { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); }
-    .time-slot { font-size: 0.8rem; padding: 7px; }
+
     .footer-content { flex-direction: column; text-align: center; gap: 15px; }
     .footer-copy { order: 3; }
     .social-icons-footer a { margin: 0 10px; }
-    .booking-form-wrapper, .contact-form-wrapper { padding: 25px 20px; }
-    .form-description { font-size: 0.95rem; }
+    .contact-form-wrapper { padding: 25px 20px; }
+    .contact-form-wrapper .form-description { font-size: 0.95rem; }
 }
