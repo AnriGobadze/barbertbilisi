@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // FIX: Changed variable name for Supabase client to avoid conflict
+    // Assumes the global 'supabase' object is available from the Supabase SDK script
+    const supaClient = supabase.createClient(
+        'https://mjsmnsxqwxmpevckzych.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qc21uc3hxd3htcGV2Y2t6eWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzAwMzEsImV4cCI6MjA2NDcwNjAzMX0.6INQZFMGFWq4kiwzbcVLEL1m_7lgmwWXF1pc_4K3Ncw'
+    );
+
     const AppConfig = {
         apiBaseUrl: '/api',
         services: [
@@ -54,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const category in times) {
                 times[category] = times[category].filter(() => Math.random() > 0.25);
             }
-            if (dateString && parseInt(dateString.slice(-2)) % 7 === 0) { 
+            if (dateString && parseInt(dateString.slice(-2)) % 7 === 0) {
                  if (Math.random() < 0.3) return { morning: [], day: [], evening: [] };
             }
             return times;
@@ -64,25 +71,37 @@ document.addEventListener('DOMContentLoaded', () => {
             await new Promise(resolve => setTimeout(resolve, 100));
             return AppConfig.services;
         },
+        // This submitBooking in ApiService is currently NOT USED by BookingFlow
+        // BookingFlow directly uses the supaClient
         async submitBooking(bookingData) {
-            console.log('ApiService: MOCK Submitting booking', bookingData);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if (bookingData.email.includes("fail")) {
-                 return { success: false, message: 'სამწუხაროდ, დაჯავშნა ვერ მოხერხდა. სცადეთ თავიდან.' };
-            }
-            return { 
-                success: true, 
-                message: `თქვენი ჯავშანი ${bookingData.serviceName}-ზე, ${bookingData.date} ${bookingData.time}-ისთვის მიღებულია.` 
-            };
-        },
+    try {
+        const response = await fetch('https://mjsmnsxqwxmpevckzych.supabase.co/rest/v1/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qc21uc3hxd3htcGV2Y2t6eWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzAwMzEsImV4cCI6MjA2NDcwNjAzMX0.6INQZFMGFWq4kiwzbcVLEL1m_7lgmwWXF1pc_4K3Ncw',  // safe for client-side
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qc21uc3hxd3htcGV2Y2t6eWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzAwMzEsImV4cCI6MjA2NDcwNjAzMX0.6INQZFMGFWq4kiwzbcVLEL1m_7lgmwWXF1pc_4K3Ncw',
+                'Prefer': 'return=representation'  // Optional: returns inserted row
+            },
+            body: JSON.stringify(bookingData)
+        });
+
+        const result = await response.json();
+        return result;
+    } catch (err) {
+        console.error('Booking submission failed:', err);
+        return { success: false, message: 'დაფიქსირდა შეცდომა.' };
+    }
+}
+,
         async submitContactForm(contactData) {
             console.log('ApiService: MOCK Submitting contact form', contactData);
             await new Promise(resolve => setTimeout(resolve, 700));
              if (contactData.email.includes("error")) {
                  return { success: false, message: 'შეტყობინების გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.' };
             }
-            return { 
-                success: true, 
+            return {
+                success: true,
                 message: `შეტყობინება წარმატებით გაიგზავნა. მადლობა, ${contactData.name}!`
             };
         }
@@ -115,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 hamburger: document.querySelector('.hamburger'),
                 navMenu: document.querySelector('.nav-menu'),
                 navLogo: document.querySelector('.nav-logo'),
-                navbar: document.querySelector('.navbar') 
+                navbar: document.querySelector('.navbar')
             };
             this._bindEvents();
             this._handleInitialLoad();
@@ -191,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         init() {
             this._cacheDOMElements();
-            if (!this.elements.bookingForm) { return; }
+            if (!this.elements.bookingForm) { console.warn("BookingFlow: bookingForm not found. Booking flow may not work."); return; }
             this._bindEvents();
             this._setupInitialUI();
             this.loadServicesAndRenderCalendar();
@@ -242,12 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         async loadServicesAndRenderCalendar() {
             if (this.elements.noTimeSlotsMessage) {
-                UIUtils.showElement(this.elements.noTimeSlotsMessage); 
+                UIUtils.showElement(this.elements.noTimeSlotsMessage);
                 UIUtils.setText(this.elements.noTimeSlotsMessage, "იტვირთება...");
             }
             try {
                 this.state.availableServices = await ApiService.fetchServices();
-                await this.renderCalendar(); 
+                await this.renderCalendar();
             } catch (error) {
                 console.error("Failed to load initial booking data:", error);
                 if (this.elements.currentMonthYearDisplay) { UIUtils.setText(this.elements.currentMonthYearDisplay, "მონაცემების ჩატვირთვის შეცდომა."); }
@@ -265,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
         async renderCalendar() {
             const { calendarGrid, currentMonthYearDisplay, prevMonthBtn, nextMonthBtn } = this.elements;
             if (!calendarGrid || !currentMonthYearDisplay) { return; }
-            UIUtils.setHTML(calendarGrid, '<div>იტვირთება კალენდარი...</div>'); 
+            UIUtils.setHTML(calendarGrid, '<div>იტვირთება კალენდარი...</div>');
             const month = this.state.currentDisplayDate.getMonth();
             const year = this.state.currentDisplayDate.getFullYear();
             UIUtils.setText(currentMonthYearDisplay, `${AppConfig.locale.months[month]} ${year}`);
@@ -279,16 +298,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.state.availableDatesCache[monthCacheKey] = await ApiService.fetchAvailableDates(year, month);
                 } catch (error) {
                     console.error("Failed to fetch date availability:", error);
-                    this.state.availableDatesCache[monthCacheKey] = {}; 
+                    this.state.availableDatesCache[monthCacheKey] = {};
                     UIUtils.setHTML(calendarGrid, '<div>კალენდრის ჩატვირთვის შეცდომა.</div>');
                     return;
                 }
             }
             const monthAvailability = this.state.availableDatesCache[monthCacheKey];
-            UIUtils.setHTML(calendarGrid, ''); 
+            UIUtils.setHTML(calendarGrid, '');
             const firstDayOfMonthDate = new Date(year, month, 1);
             let firstDayOfMonthWeekday = firstDayOfMonthDate.getDay();
-            firstDayOfMonthWeekday = (firstDayOfMonthWeekday === 0) ? 6 : firstDayOfMonthWeekday - 1; 
+            firstDayOfMonthWeekday = (firstDayOfMonthWeekday === 0) ? 6 : firstDayOfMonthWeekday - 1;
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             for (let i = 0; i < firstDayOfMonthWeekday; i++) {
                 const emptyCell = document.createElement('div');
@@ -305,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let isDisabled = false;
                 if (currentDate < today || currentDate > maxAdvanceDate) {
                     isDisabled = true;
-                } else if (!monthAvailability[dateStr]) { 
+                } else if (!monthAvailability[dateStr]) {
                     isDisabled = true;
                 }
                 if (isDisabled) {
@@ -384,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
         _renderServiceList() {
             const { serviceListContainer } = this.elements;
             if(!serviceListContainer) { return; }
-            UIUtils.setHTML(serviceListContainer, ''); 
+            UIUtils.setHTML(serviceListContainer, '');
             this.state.availableServices.forEach(service => {
                 const serviceBtn = document.createElement('button');
                 serviceBtn.type = 'button';
@@ -427,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 (stepName !== 'date') ? UIUtils.showFlexElement(this.elements.backButton) : UIUtils.hideElement(this.elements.backButton);
             }
             if(this.elements.bookingFormWrapper) { this.elements.bookingFormWrapper.scrollTo({top: 0, behavior: 'smooth'}); }
-            this._updateBookingSummary(); 
+            this._updateBookingSummary();
         },
         _handleBackClick() {
             const cs = this.state.currentStep;
@@ -438,14 +457,14 @@ document.addEventListener('DOMContentLoaded', () => {
         async _handleBookingSubmit(e) {
             e.preventDefault();
             const { bookingConfirmation, bookingForm, nameInput, emailInput, phoneInput } = this.elements;
-            
-            if(!bookingConfirmation) return; // Should not happen if elements are cached
+
+            if (!bookingConfirmation) return;
             UIUtils.hideElement(bookingConfirmation);
             UIUtils.removeClass(bookingConfirmation, 'error');
 
             const nameValue = UIUtils.getValue(nameInput);
             const emailValue = UIUtils.getValue(emailInput);
-            const phoneValue = UIUtils.getValue(phoneInput); // Optional field
+            const phoneValue = UIUtils.getValue(phoneInput);
             const { selectedFullDate, selectedTime, selectedService } = this.state;
 
             if (!selectedFullDate || !selectedTime || !selectedService.value || !nameValue || !emailValue) {
@@ -456,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!AppConfig.validationRegex.email.test(emailValue)) {
-                UIUtils.setText(bookingConfirmation, 'შეყვანილი ელ. ფოსტა არასწორი ფორმატისაა. გთხოვთ, შეამოწმოთ.');
+                UIUtils.setText(bookingConfirmation, 'შეყვანილი ელ. ფოსტა არასწორი ფორმატისაა.');
                 UIUtils.addClass(bookingConfirmation, 'error');
                 UIUtils.showElement(bookingConfirmation);
                 if (emailInput) UIUtils.focusElement(emailInput);
@@ -464,67 +483,80 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (phoneValue && !AppConfig.validationRegex.phoneGE.test(phoneValue)) {
-                // Phone is optional, so only validate if a value is entered
-                UIUtils.setText(bookingConfirmation, 'ტელეფონის ნომერი არასწორი ფორმატისაა (მაგ: 5xxxxxxxx).');
+                UIUtils.setText(bookingConfirmation, 'ტელეფონის ნომერი არასწორია.');
                 UIUtils.addClass(bookingConfirmation, 'error');
                 UIUtils.showElement(bookingConfirmation);
                 if (phoneInput) UIUtils.focusElement(phoneInput);
                 return;
             }
-            
-            const submitButton = bookingForm ? bookingForm.querySelector('button[type="submit"]') : null;
-            if(submitButton) { UIUtils.disableElement(submitButton); }
-            
+
+            const submitButton = bookingForm?.querySelector('button[type="submit"]');
+            if (submitButton) UIUtils.disableElement(submitButton);
+
             UIUtils.setText(bookingConfirmation, 'მიმდინარეობს ჯავშნის დამუშავება...');
-            UIUtils.removeClass(bookingConfirmation, 'error');
             UIUtils.showElement(bookingConfirmation);
-            
-            const bookingData = {
-                date: selectedFullDate, time: selectedTime,
-                serviceId: selectedService.value, serviceName: selectedService.text,
-                name: nameValue, email: emailValue, phone: phoneValue
-            };
 
             try {
-                const response = await ApiService.submitBooking(bookingData);
-                UIUtils.setText(bookingConfirmation, response.message);
-                UIUtils.toggleClass(bookingConfirmation, 'error', !response.success);
-                UIUtils.showElement(bookingConfirmation);
-                if(response.success) {
-                    if(bookingForm) { bookingForm.reset(); }
-                    setTimeout(() => { this.resetToFirstStep(false); }, 5000);
+                // FIX: Use the corrected Supabase client instance 'supaClient'
+                const { data, error } = await supaClient
+                    .from('bookings')
+                    .insert([{
+                        date: selectedFullDate,
+                        time: selectedTime,
+                        service_id: selectedService.value,
+                        service_name: selectedService.text,
+                        name: nameValue,
+                        email: emailValue,
+                        phone: phoneValue || null
+                    }]);
+
+                const success = !error;
+                const message = error ? `ჯავშნის დამახსოვრების შეცდომა: ${error.message}` : 'ჯავშანი წარმატებით გაიგზავნა.';
+
+                UIUtils.setText(bookingConfirmation, message);
+                UIUtils.toggleClass(bookingConfirmation, 'error', !success);
+
+                if (success) {
+                    bookingForm?.reset();
+                    this.resetStateForNewBooking(); // Added method call for clarity
+                    // No need to call resetToFirstStep if resetStateForNewBooking already handles UI
+                    // If resetStateForNewBooking only handles state, then keep UI reset if desired.
+                    setTimeout(() => this._goToStep('date'), 5000); // Or SpaNavigator.switchActiveSection('booking')
                 }
-            } catch (error) {
-                console.error("Booking submission error:", error);
-                UIUtils.setText(bookingConfirmation, 'დაფიქსირდა მოულოდნელი შეცდომა. გთხოვთ, სცადოთ თავიდან.');
+            } catch (err) {
+                console.error("Booking submission error:", err);
+                UIUtils.setText(bookingConfirmation, 'დაფიქსირდა მოულოდნელი შეცდომა.');
                 UIUtils.addClass(bookingConfirmation, 'error');
                 UIUtils.showElement(bookingConfirmation);
             } finally {
-                if(submitButton) { UIUtils.enableElement(submitButton); }
+                if (submitButton) UIUtils.enableElement(submitButton);
             }
         },
-        resetToFirstStep(reloadCalendarData = true) {
-            this.state.selectedFullDate = null; this.state.selectedTime = null; 
+        // It seems a reset function for BookingFlow might be missing or implicitly part of resetToFirstStep
+        // Added a specific state reset method for clarity after booking
+        resetStateForNewBooking() {
+            this.state.selectedFullDate = null;
+            this.state.selectedTime = null;
             this.state.selectedService = { value: null, text: null };
-            UIUtils.setValue(this.elements.selectedDateHidden, '');
-            UIUtils.setValue(this.elements.selectedTimeHidden, '');
-            UIUtils.setValue(this.elements.selectedServiceValueHidden, '');
-            UIUtils.setValue(this.elements.selectedServiceTextHidden, '');
-            if (this.elements.bookingForm) { this.elements.bookingForm.reset(); }
-            if (this.elements.bookingConfirmation) {
-                UIUtils.hideElement(this.elements.bookingConfirmation);
-                UIUtils.removeClass(this.elements.bookingConfirmation, 'error');
-            }
-            document.querySelectorAll('#calendar-grid-main .calendar-day.selected, .time-slot-btn.selected, .service-option-btn.selected')
-                .forEach(el => { UIUtils.removeClass(el, 'selected'); });
-            if (this.elements.selectedDateDisplayHeader) { UIUtils.setText(this.elements.selectedDateDisplayHeader, ''); }
-            this.state.currentDisplayDate = new Date(); 
-            if (reloadCalendarData) {
-                this.state.availableDatesCache = {}; 
-                this.state.availableTimesCache = {}; 
-            }
-            this.renderCalendar();
+            // Clear selected visual states from calendar and time slots
+            document.querySelectorAll('#calendar-grid-main .calendar-day.selected').forEach(cell => UIUtils.removeClass(cell, 'selected'));
+            document.querySelectorAll('.time-slot-btn.selected').forEach(btn => UIUtils.removeClass(btn, 'selected'));
+            document.querySelectorAll('.service-option-btn.selected').forEach(btn => UIUtils.removeClass(btn, 'selected'));
+            if (this.elements.selectedDateDisplayHeader) UIUtils.setText(this.elements.selectedDateDisplayHeader, '');
+            this._updateBookingSummary(); // Update summary to reflect cleared state
+        },
+        // Assuming you might want a more complete reset for the booking section itself
+        resetToFirstStep(shouldReloadData = true) {
+            this.resetStateForNewBooking();
             this._goToStep('date');
+            if (shouldReloadData) {
+                 // Optionally clear cache if data might change frequently or to force reload.
+                // this.state.availableDatesCache = {};
+                // this.state.availableTimesCache = {};
+                this.loadServicesAndRenderCalendar(); // This will re-render calendar for current month
+            } else {
+                this.renderCalendar(); // Just re-render the calendar (e.g., after booking)
+            }
         }
     };
 
@@ -540,6 +572,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             if(this.elements.form && this.elements.confirmationMessage) {
                 this._bindEvents();
+            } else {
+                console.warn("ContactForm: Form or confirmation message element not found.");
             }
         },
         _bindEvents() {
@@ -550,11 +584,11 @@ document.addEventListener('DOMContentLoaded', () => {
         async _handleSubmit(e) {
             e.preventDefault();
             const { form, confirmationMessage, nameInput, emailInput, messageInput } = this.elements;
-            if (!confirmationMessage) { return; } 
+            if (!confirmationMessage) { return; }
 
             UIUtils.hideElement(confirmationMessage);
             UIUtils.removeClass(confirmationMessage, 'error');
-            
+
             const nameValue = UIUtils.getValue(nameInput);
             const emailValue = UIUtils.getValue(emailInput);
             const messageValue = UIUtils.getValue(messageInput);
@@ -570,10 +604,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 UIUtils.setText(confirmationMessage, 'შეყვანილი ელ. ფოსტა არასწორი ფორმატისაა. გთხოვთ, შეამოწმოთ.');
                 UIUtils.addClass(confirmationMessage, 'error');
                 UIUtils.showElement(confirmationMessage);
-                if(this.elements.emailInput) UIUtils.focusElement(this.elements.emailInput); // check if this.elements.emailInput for contact for is correct
+                if(this.elements.emailInput) UIUtils.focusElement(this.elements.emailInput);
                 return;
             }
-            
+
             const submitButton = form ? form.querySelector('button[type="submit"]') : null;
             if (submitButton) { UIUtils.disableElement(submitButton); }
 
@@ -588,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 UIUtils.toggleClass(confirmationMessage, 'error', !response.success);
                 if (response.success) {
                     if(form) { form.reset(); }
-                    setTimeout(() => { 
+                    setTimeout(() => {
                         if(confirmationMessage) { UIUtils.hideElement(confirmationMessage); }
                     }, 5000);
                 }
@@ -596,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Contact form submission error:", error);
                 UIUtils.setText(confirmationMessage, 'დაფიქსირდა მოულოდნელი შეცდომა.');
                 UIUtils.addClass(confirmationMessage, 'error');
-                UIUtils.showElement(confirmationMessage); 
+                UIUtils.showElement(confirmationMessage);
             } finally {
                 if (submitButton) { UIUtils.enableElement(submitButton); }
             }
@@ -607,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(currentYearSpan) { UIUtils.setText(currentYearSpan, new Date().getFullYear()); }
 
     SpaNavigator.init();
-    window.BookingFlow = BookingFlow; 
+    window.BookingFlow = BookingFlow;
     if (typeof BookingFlow !== 'undefined' && BookingFlow.init) { BookingFlow.init(); }
     if (typeof ContactForm !== 'undefined' && ContactForm.init) { ContactForm.init(); }
 
