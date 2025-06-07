@@ -613,18 +613,24 @@ a:hover {
     gap: 10px;
     margin-top: 15px;
 }
+/* --- USE THIS NEW, MODIFIED BLOCK INSTEAD --- */
 .service-option-btn {
-    display: block;
-    width: 100%;
-    padding: 15px 20px;
-    background-color: var(--input-bg);
-    border: 1px solid var(--input-border);
-    color: var(--secondary-color);
-    border-radius: 4px;
-    text-align: left;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+  /* MODIFIED for layout */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* --- All your original styles are kept below --- */
+  width: 100%;
+  padding: 15px 20px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--secondary-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed);
+  /* text-align: left; is no longer needed with flexbox */
 }
 .service-option-btn:hover {
     background-color: #4a4a4a;
@@ -635,6 +641,27 @@ a:hover {
     border-color: var(--hover-accent);
     color: var(--primary-color);
     font-weight: 600;
+}
+
+/* --- ADD THIS NEW BLOCK OF CODE --- */
+
+/* Style for the service name text */
+.service-name-display {
+  font-weight: 500; /* Makes the name slightly bolder */
+}
+
+/* Style for the lighter duration text */
+.service-duration-display {
+  color: #a0a0a0;        /* A more subtle, slightly darker gray */
+  font-size: 0.9em;       /* Slightly smaller text */
+  white-space: nowrap;  /* Prevents the duration from wrapping to a new line */
+  margin-left: 15px;      /* Creates space between name and duration */
+  transition: color var(--transition-speed); /* Add transition for smoothness */
+}
+
+/* When the button is selected, make the duration text match the main text color */
+.service-option-btn.selected .service-duration-display {
+  color: var(--primary-color);
 }
 
 

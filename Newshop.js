@@ -1,6 +1,7 @@
+// Newshop.js - Complete Final Code
+
 document.addEventListener('DOMContentLoaded', () => {
-    // FIX: Changed variable name for Supabase client to avoid conflict
-    // Assumes the global 'supabase' object is available from the Supabase SDK script
+    // Correctly initialize the Supabase client.
     const supaClient = supabase.createClient(
         'https://mjsmnsxqwxmpevckzych.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qc21uc3hxd3htcGV2Y2t6eWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzAwMzEsImV4cCI6MjA2NDcwNjAzMX0.6INQZFMGFWq4kiwzbcVLEL1m_7lgmwWXF1pc_4K3Ncw'
@@ -8,15 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const AppConfig = {
         apiBaseUrl: '/api',
-        services: [
-            { value: "ზუსტი თმის შეჭრა", text: "ზუსტი თმის შეჭრა" },
-            { value: "წვერის მოდელირება", text: "წვერის მოდელირება" },
-            { value: "მკვეთრი გადაყვანა", text: "მკვეთრი გადაყვანა" },
-            { value: "განახლება და დავარცხნა", text: "განახლება და დავარცხნა" },
-            { value: "თმის ტონირება", text: "თმის ტონირება (შენიღბვა)" },
-            { value: "მამა-შვილის შეჭრა", text: "მამა-შვილის შეჭრა" },
-            { value: "შეჭრა და წვერის კომბო", text: "შეჭრა და წვერის კომბო (მოკლე)" }
-        ],
+        // UPDATED: Global booking settings
+        booking: {
+            maxAdvanceBookingDays: 20,
+            restTimeMinutes: 6 // Barber's rest time set to 6 minutes
+        },
+        // NEW: This array will be filled with data from the HTML page itself.
+        services: [], 
         timeSlots: {
             morning: ["11:00", "11:45"],
             day: ["12:30", "13:15", "14:00", "14:45", "15:30", "16:15", "17:00", "17:45"],
@@ -26,19 +25,57 @@ document.addEventListener('DOMContentLoaded', () => {
             months: ["იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი", "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოემბერი", "დეკემბერი"],
             daysShort: ["ორშ", "სამ", "ოთხ", "ხუთ", "პარ", "შაბ", "კვი"]
         },
-        booking: {
-            maxAdvanceBookingDays: 20
-        },
         validationRegex: {
             email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
             phoneGE: /^\d{9}$/
         }
     };
+    
+    // NEW: Helper function to parse duration strings like "(~ 1.5 საათი)" into minutes
+    function parseDuration(durationText) {
+        if (!durationText) return 45; // Default duration if text is missing
+        const match = durationText.match(/(\d+(\.\d+)?)\s*(საათი|წუთი)/);
+        if (!match) return 45; // Default if parsing fails
+        const value = parseFloat(match[1]);
+        const unit = match[3];
+        if (unit.includes("საათი")) {
+            return value * 60; // Convert hours to minutes
+        }
+        return value; // Assume minutes
+    }
 
+    // NEW: Function to read services from the DOM and populate AppConfig
+    function initializeServicesFromDOM() {
+        const serviceCards = document.querySelectorAll('#services .service-card');
+        serviceCards.forEach(card => {
+            const nameElement = card.querySelector('h3');
+            const durationElement = card.querySelector('small.service-duration');
+            if (nameElement && durationElement) {
+                const serviceName = nameElement.textContent.trim();
+                const durationInMinutes = parseDuration(durationElement.textContent);
+                AppConfig.services.push({
+                    value: serviceName,
+                    text: serviceName,
+                    duration: durationInMinutes
+                });
+            }
+        });
+        console.log("Services loaded from HTML:", AppConfig.services);
+    }
+    
+    // NEW: Run the function immediately on page load to populate the services
+    initializeServicesFromDOM();
+
+    // The ApiService now uses the dynamic AppConfig data
     const ApiService = {
+        // Helper to convert "HH:MM" to minutes for calculations
+        _timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        },
+
+        // This simplified function just checks the valid booking window.
         async fetchAvailableDates(year, month) {
-            console.log(`ApiService: MOCK Fetching available dates for ${year}-${String(month + 1).padStart(2, '0')}`);
-            await new Promise(resolve => setTimeout(resolve, 300));
             const availableDates = {};
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date(); today.setHours(0,0,0,0);
@@ -47,63 +84,62 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let day = 1; day <= daysInMonth; day++) {
                 const currentDate = new Date(year, month, day);
                 if (currentDate >= today && currentDate <= maxBookingDate) {
-                    if (Math.random() > 0.05) {
-                        availableDates[`${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`] = true;
-                    }
+                     availableDates[`${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`] = true;
                 }
             }
             return availableDates;
         },
+        
+        // UPGRADED: The core logic to fetch available times based on duration and rest time.
         async fetchAvailableTimes(dateString) {
-            console.log(`ApiService: MOCK Fetching available times for ${dateString}`);
-            await new Promise(resolve => setTimeout(resolve, 300));
-            let times = JSON.parse(JSON.stringify(AppConfig.timeSlots));
-            for (const category in times) {
-                times[category] = times[category].filter(() => Math.random() > 0.25);
-            }
-            if (dateString && parseInt(dateString.slice(-2)) % 7 === 0) {
-                 if (Math.random() < 0.3) return { morning: [], day: [], evening: [] };
-            }
-            return times;
-        },
-        async fetchServices() {
-            console.log("ApiService: MOCK Fetching services");
-            await new Promise(resolve => setTimeout(resolve, 100));
-            return AppConfig.services;
-        },
-        // This submitBooking in ApiService is currently NOT USED by BookingFlow
-        // BookingFlow directly uses the supaClient
-        async submitBooking(bookingData) {
-    try {
-        const response = await fetch('https://mjsmnsxqwxmpevckzych.supabase.co/rest/v1/bookings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qc21uc3hxd3htcGV2Y2t6eWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzAwMzEsImV4cCI6MjA2NDcwNjAzMX0.6INQZFMGFWq4kiwzbcVLEL1m_7lgmwWXF1pc_4K3Ncw',  // safe for client-side
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qc21uc3hxd3htcGV2Y2t6eWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxMzAwMzEsImV4cCI6MjA2NDcwNjAzMX0.6INQZFMGFWq4kiwzbcVLEL1m_7lgmwWXF1pc_4K3Ncw',
-                'Prefer': 'return=representation'  // Optional: returns inserted row
-            },
-            body: JSON.stringify(bookingData)
-        });
+            console.log(`ApiService: Fetching available times for ${dateString} with DURATION logic`);
 
-        const result = await response.json();
-        return result;
-    } catch (err) {
-        console.error('Booking submission failed:', err);
-        return { success: false, message: 'დაფიქსირდა შეცდომა.' };
-    }
-}
-,
+            const allPossibleSlots = [...AppConfig.timeSlots.morning, ...AppConfig.timeSlots.day, ...AppConfig.timeSlots.evening];
+            const allPossibleSlotsInMinutes = allPossibleSlots.map(t => this._timeToMinutes(t));
+            const serviceDurationMap = new Map(AppConfig.services.map(s => [s.value, s.duration]));
+
+            try {
+                const { data: bookings, error } = await supaClient
+                    .from('bookings')
+                    .select('time, service_name')
+                    .eq('date', dateString);
+                if (error) { throw error; }
+
+                const busyIntervals = bookings.map(booking => {
+                    const startTime = this._timeToMinutes(booking.time);
+                    const duration = serviceDurationMap.get(booking.service_name) || 45; // Default to 45 min just in case
+                    const endTime = startTime + duration + AppConfig.booking.restTimeMinutes;
+                    return { start: startTime, end: endTime };
+                });
+
+                const availableSlotsInMinutes = allPossibleSlotsInMinutes.filter(slotTime => {
+                    return !busyIntervals.some(interval => slotTime >= interval.start && slotTime < interval.end);
+                });
+
+                const availableSlots = availableSlotsInMinutes.map(minutes => {
+                    const h = Math.floor(minutes / 60);
+                    const m = minutes % 60;
+                    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                });
+                
+                return {
+                    morning: availableSlots.filter(t => AppConfig.timeSlots.morning.includes(t)),
+                    day: availableSlots.filter(t => AppConfig.timeSlots.day.includes(t)),
+                    evening: availableSlots.filter(t => AppConfig.timeSlots.evening.includes(t)),
+                };
+            } catch (err) {
+                console.error("An unexpected error occurred while calculating available times:", err);
+                return { morning: [], day: [], evening: [] };
+            }
+        },
+
         async submitContactForm(contactData) {
             console.log('ApiService: MOCK Submitting contact form', contactData);
             await new Promise(resolve => setTimeout(resolve, 700));
              if (contactData.email.includes("error")) {
                  return { success: false, message: 'შეტყობინების გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.' };
             }
-            return {
-                success: true,
-                message: `შეტყობინება წარმატებით გაიგზავნა. მადლობა, ${contactData.name}!`
-            };
+            return { success: true, message: `შეტყობინება წარმატებით გაიგზავნა. მადლობა, ${contactData.name}!` };
         }
     };
 
@@ -217,7 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         _cacheDOMElements() {
             this.elements = {
-                stepsContainer: document.getElementById('booking-steps-container'),
                 dateStep: document.getElementById('date-selection-step'),
                 timeStep: document.getElementById('time-selection-step'),
                 serviceStep: document.getElementById('service-selection-step'),
@@ -265,7 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 UIUtils.setText(this.elements.noTimeSlotsMessage, "იტვირთება...");
             }
             try {
-                this.state.availableServices = await ApiService.fetchServices();
+                // ADJUSTED: Services are now available globally in AppConfig after being loaded from the DOM.
+                this.state.availableServices = AppConfig.services;
                 await this.renderCalendar();
             } catch (error) {
                 console.error("Failed to load initial booking data:", error);
@@ -321,16 +357,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayCell.dataset.day = String(day);
                 const currentDate = new Date(year, month, day); currentDate.setHours(0,0,0,0);
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                let isDisabled = false;
-                if (currentDate < today || currentDate > maxAdvanceDate) {
-                    isDisabled = true;
-                } else if (!monthAvailability[dateStr]) {
-                    isDisabled = true;
-                }
-                if (isDisabled) {
+                if (!monthAvailability[dateStr]) {
                     UIUtils.addClass(dayCell, 'disabled');
                 } else {
-                    UIUtils.addClass(dayCell, 'has-slots');
                     dayCell.addEventListener('click', () => { this._handleDayClick(dateStr, dayCell); });
                 }
                 if (currentDate.getTime() === today.getTime()) { UIUtils.addClass(dayCell, 'today'); }
@@ -400,21 +429,53 @@ document.addEventListener('DOMContentLoaded', () => {
             this._renderServiceList();
             this._goToStep('service');
         },
-        _renderServiceList() {
-            const { serviceListContainer } = this.elements;
-            if(!serviceListContainer) { return; }
-            UIUtils.setHTML(serviceListContainer, '');
-            this.state.availableServices.forEach(service => {
-                const serviceBtn = document.createElement('button');
-                serviceBtn.type = 'button';
-                UIUtils.addClass(serviceBtn, 'service-option-btn');
-                UIUtils.setText(serviceBtn, service.text);
-                serviceBtn.dataset.value = service.value;
-                if(this.state.selectedService.value === service.value) { UIUtils.addClass(serviceBtn, 'selected'); }
-                serviceBtn.addEventListener('click', () => { this._handleServiceClick(service, serviceBtn); });
-                serviceListContainer.appendChild(serviceBtn);
-            });
-        },
+       
+
+
+_renderServiceList() {
+    const { serviceListContainer } = this.elements;
+    if (!serviceListContainer) { return; }
+
+    UIUtils.setHTML(serviceListContainer, '');
+
+    this.state.availableServices.forEach(service => {
+        const serviceBtn = document.createElement('button');
+        serviceBtn.type = 'button';
+        UIUtils.addClass(serviceBtn, 'service-option-btn');
+
+        // --- UPDATED LOGIC ---
+
+        // 1. Format the duration as before.
+        let durationString = '';
+        if (service.duration >= 60) {
+            const hours = parseFloat((service.duration / 60).toFixed(1));
+            durationString = `(~ ${hours} საათი)`;
+        } else {
+            durationString = `(~ ${service.duration} წუთი)`;
+        }
+
+        // 2. Build an HTML string with a special class for the duration.
+        // This is the key change! We wrap the duration in a span with a class.
+        const buttonHTML = `
+            <span class="service-name-display">${service.text}</span>
+            <span class="service-duration-display">${durationString}</span>
+        `;
+        
+        // 3. Use setHTML to place this structure inside the button.
+        UIUtils.setHTML(serviceBtn, buttonHTML);
+
+        // --- END OF UPDATED LOGIC ---
+
+        serviceBtn.dataset.value = service.value;
+        
+        if (this.state.selectedService.value === service.value) {
+            UIUtils.addClass(serviceBtn, 'selected');
+        }
+
+        serviceBtn.addEventListener('click', () => { this._handleServiceClick(service, serviceBtn); });
+        serviceListContainer.appendChild(serviceBtn);
+    });
+},
         _handleServiceClick(serviceObj, clickedBtn) {
             this.state.selectedService = { value: serviceObj.value, text: serviceObj.text };
             UIUtils.setValue(this.elements.selectedServiceValueHidden, serviceObj.value);
@@ -467,14 +528,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const phoneValue = UIUtils.getValue(phoneInput);
             const { selectedFullDate, selectedTime, selectedService } = this.state;
 
-            if (!selectedFullDate || !selectedTime || !selectedService.value || !nameValue || !emailValue) {
+            if (!selectedFullDate || !selectedTime || !selectedService.value || !nameValue) {
                 UIUtils.setText(bookingConfirmation, 'გთხოვთ, შეავსოთ ყველა სავალდებულო ველი და გააკეთოთ არჩევანი ყველა ეტაპზე.');
                 UIUtils.addClass(bookingConfirmation, 'error');
                 UIUtils.showElement(bookingConfirmation);
                 return;
             }
 
-            if (!AppConfig.validationRegex.email.test(emailValue)) {
+            if (emailValue && !AppConfig.validationRegex.email.test(emailValue)) {
                 UIUtils.setText(bookingConfirmation, 'შეყვანილი ელ. ფოსტა არასწორი ფორმატისაა.');
                 UIUtils.addClass(bookingConfirmation, 'error');
                 UIUtils.showElement(bookingConfirmation);
@@ -497,65 +558,56 @@ document.addEventListener('DOMContentLoaded', () => {
             UIUtils.showElement(bookingConfirmation);
 
             try {
-                // FIX: Use the corrected Supabase client instance 'supaClient'
                 const { data, error } = await supaClient
                     .from('bookings')
                     .insert([{
                         date: selectedFullDate,
                         time: selectedTime,
-                        service_id: selectedService.value,
+                        service_id: selectedService.value, // It's better to store ID, but name is fine for now
                         service_name: selectedService.text,
                         name: nameValue,
                         email: emailValue,
                         phone: phoneValue || null
                     }]);
 
-                const success = !error;
-                const message = error ? `ჯავშნის დამახსოვრების შეცდომა: ${error.message}` : 'ჯავშანი წარმატებით გაიგზავნა.';
+                if (error) { throw error; }
+                
+                UIUtils.setText(bookingConfirmation, 'ჯავშანი წარმატებით გაიგზავნა.');
+                UIUtils.removeClass(bookingConfirmation, 'error');
+                bookingForm?.reset();
+                this.resetStateForNewBooking(); 
+                // Invalidate the cache for the day that was just booked
+                this.state.availableTimesCache[selectedFullDate] = null;
+                setTimeout(() => this._goToStep('date'), 5000);
 
-                UIUtils.setText(bookingConfirmation, message);
-                UIUtils.toggleClass(bookingConfirmation, 'error', !success);
-
-                if (success) {
-                    bookingForm?.reset();
-                    this.resetStateForNewBooking(); // Added method call for clarity
-                    // No need to call resetToFirstStep if resetStateForNewBooking already handles UI
-                    // If resetStateForNewBooking only handles state, then keep UI reset if desired.
-                    setTimeout(() => this._goToStep('date'), 5000); // Or SpaNavigator.switchActiveSection('booking')
-                }
             } catch (err) {
                 console.error("Booking submission error:", err);
-                UIUtils.setText(bookingConfirmation, 'დაფიქსირდა მოულოდნელი შეცდომა.');
+                UIUtils.setText(bookingConfirmation, `დაფიქსირდა მოულოდნელი შეცდომა: ${err.message}`);
                 UIUtils.addClass(bookingConfirmation, 'error');
                 UIUtils.showElement(bookingConfirmation);
             } finally {
                 if (submitButton) UIUtils.enableElement(submitButton);
             }
         },
-        // It seems a reset function for BookingFlow might be missing or implicitly part of resetToFirstStep
-        // Added a specific state reset method for clarity after booking
         resetStateForNewBooking() {
             this.state.selectedFullDate = null;
             this.state.selectedTime = null;
             this.state.selectedService = { value: null, text: null };
-            // Clear selected visual states from calendar and time slots
             document.querySelectorAll('#calendar-grid-main .calendar-day.selected').forEach(cell => UIUtils.removeClass(cell, 'selected'));
             document.querySelectorAll('.time-slot-btn.selected').forEach(btn => UIUtils.removeClass(btn, 'selected'));
             document.querySelectorAll('.service-option-btn.selected').forEach(btn => UIUtils.removeClass(btn, 'selected'));
             if (this.elements.selectedDateDisplayHeader) UIUtils.setText(this.elements.selectedDateDisplayHeader, '');
-            this._updateBookingSummary(); // Update summary to reflect cleared state
+            this._updateBookingSummary();
         },
-        // Assuming you might want a more complete reset for the booking section itself
         resetToFirstStep(shouldReloadData = true) {
             this.resetStateForNewBooking();
             this._goToStep('date');
             if (shouldReloadData) {
-                 // Optionally clear cache if data might change frequently or to force reload.
-                // this.state.availableDatesCache = {};
-                // this.state.availableTimesCache = {};
-                this.loadServicesAndRenderCalendar(); // This will re-render calendar for current month
+                this.state.availableDatesCache = {}; // Clear date cache too on full reset
+                this.state.availableTimesCache = {}; // Clear time cache
+                this.loadServicesAndRenderCalendar();
             } else {
-                this.renderCalendar(); // Just re-render the calendar (e.g., after booking)
+                this.renderCalendar();
             }
         }
     };
@@ -637,6 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- INITIALIZE ALL MODULES ---
     const currentYearSpan = document.getElementById('current-year');
     if(currentYearSpan) { UIUtils.setText(currentYearSpan, new Date().getFullYear()); }
 
