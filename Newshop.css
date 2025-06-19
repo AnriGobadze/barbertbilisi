@@ -18,7 +18,7 @@
     --section-padding-v-unique: 60px;
     --border-light: rgba(255, 255, 255, 0.1);
     --disabled-color: #555;
-    --available-indicator: var(--accent-color); /* For calendar days with slots */
+    --available-indicator: var(--accent-color);
 }
 
 *, *::before, *::after {
@@ -181,11 +181,11 @@ a:hover {
     transition: transform var(--transition-speed);
 }
 .nav-logo img {
-    height: 45px;
+    height: 55px;
     width: auto;
     margin-right: 10px;
     border-radius: 50%;
-    border: 1px solid var(--accent-color);
+    border: none;
 }
 .nav-logo span {
     font-size: 1.5rem;
@@ -373,7 +373,7 @@ a:hover {
 /* --- Booking Section --- */
 .booking-layout-wrapper,
 .contact-layout-wrapper {
-    gap: 5%; align-items: stretch; padding: 0;
+    gap: 5%; align-items: stretch; padding: 0; margin-left: 2rem;
 }
 .booking-info-panel, .contact-info-panel {
     flex-basis: 35%; background-color: var(--card-bg); padding: 35px; border-radius: 8px;
@@ -385,6 +385,13 @@ a:hover {
     background-color: transparent; border-left: 3px solid var(--accent-color);
     padding-left: 30px;
 }
+
+.booking-info-panel {
+  overflow: visible !important;  /* force overflow visible */
+  max-height: none !important;   /* remove any max height limits */
+}
+
+ 
 .booking-info-panel p, .contact-info-panel p { font-size: 0.95rem; margin-bottom: 15px; line-height: 1.6; }
 .booking-info-panel hr { border: none; height: 1px; background-color: var(--border-light); margin: 25px 0; }
 .booking-info-panel h4, .contact-info-panel h3 { color: var(--accent-color); margin-bottom: 10px; font-size: 1.3rem; }
@@ -788,7 +795,7 @@ p.booking-policy-text { font-size: 0.9rem; color: #bbb; line-height: 1.5; }
     .service-container { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
 
     .booking-layout-wrapper, .contact-layout-wrapper {
-        flex-direction: column; gap: 40px; padding: 0; /* This ensures it still stacks */
+        flex-direction: column; gap: 40px; padding: 0;  /* This ensures it still stacks */
     }
     .booking-info-panel, .contact-info-panel { /* This ensures it still stacks */
         flex-basis: auto; width: 100%; position: relative;
@@ -796,8 +803,8 @@ p.booking-policy-text { font-size: 0.9rem; color: #bbb; line-height: 1.5; }
         max-height: none; overflow-y: visible;
     }
     .contact-info-panel { /* This ensures it still stacks correctly */
-        border-left: none; border-top: 3px solid var(--accent-color);
-        padding: 25px 0 0 0; text-align: center;
+        border-left: none; border-left: 3px solid var(--accent-color);
+        padding: 25px 0 0 0; text-align: left; padding-left: 2rem;
     }
     .booking-icon-bg, .contact-icon-bg { display: none; }
     .booking-form-wrapper, .contact-form-wrapper { /* This ensures it still stacks correctly */

@@ -133,14 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
-        async submitContactForm(contactData) {
-            console.log('ApiService: MOCK Submitting contact form', contactData);
-            await new Promise(resolve => setTimeout(resolve, 700));
-             if (contactData.email.includes("error")) {
-                 return { success: false, message: 'შეტყობინების გაგზავნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.' };
-            }
-            return { success: true, message: `შეტყობინება წარმატებით გაიგზავნა. მადლობა, ${contactData.name}!` };
-        }
+       
     };
 
     const UIUtils = {
@@ -242,8 +235,29 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStep: 'date',
             availableServices: [],
             availableDatesCache: {},
-            availableTimesCache: {}
+            availableTimesCache: {},
+            isBookingCompleted: false 
         },
+
+                // ADD THIS NEW FUNCTION
+        _showCompletedState() {
+            // Hide all the booking form steps
+            const allSteps = document.querySelectorAll('.booking-step');
+            allSteps.forEach(step => UIUtils.hideElement(step));
+
+            // Hide the 'back' button just in case
+            if (this.elements.backButton) UIUtils.hideElement(this.elements.backButton);
+            
+            // Show a persistent message explaining the situation
+            const { bookingConfirmation } = this.elements;
+            if (bookingConfirmation) {
+                UIUtils.setText(bookingConfirmation, 'თქვენი შეხვედრა დაჯავშნილია');
+                UIUtils.removeClass(bookingConfirmation, 'error');
+                UIUtils.showElement(bookingConfirmation);
+            }
+        },
+
+
         init() {
             this._cacheDOMElements();
             if (!this.elements.bookingForm) { console.warn("BookingFlow: bookingForm not found. Booking flow may not work."); return; }
@@ -335,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (error) {
                     console.error("Failed to fetch date availability:", error);
                     this.state.availableDatesCache[monthCacheKey] = {};
-                    UIUtils.setHTML(calendarGrid, '<div>კალენდრის ჩატვირთვის შეცდომა.</div>');
+                    UIUtils.setHTML(calendarGrid, '<div>კალენდრის ჩატვირთვა ვერ მოხერხდა.</div>');
                     return;
                 }
             }
@@ -493,7 +507,7 @@ _renderServiceList() {
                 if (selectedService.text && selectedFullDate && selectedTime) {
                     UIUtils.setText(bookingSummaryDisplay, `${selectedService.text} - ${selectedFullDate}, ${selectedTime}`);
                 } else {
-                    UIUtils.setText(bookingSummaryDisplay, 'გთხოვთ, შეავსოთ ყველა წინა ველი.');
+                    UIUtils.setText(bookingSummaryDisplay, 'გთხოვთ, შეავსოთ მოცემულუ ველები.');
                 }
             }
         },
@@ -515,77 +529,99 @@ _renderServiceList() {
             else if (cs === 'service') { this._goToStep('time'); }
             else if (cs === 'details') { this._goToStep('service'); }
         },
-        async _handleBookingSubmit(e) {
+                        // REPLACE THIS ENTIRE FUNCTION
+                async _handleBookingSubmit(e) {
             e.preventDefault();
             const { bookingConfirmation, bookingForm, nameInput, emailInput, phoneInput } = this.elements;
+    
+    // --- START: NEW VALIDATION LOGIC ---
+    const nameValue = UIUtils.getValue(nameInput);
+    const phoneValue = UIUtils.getValue(phoneInput);
+    const emailValue = UIUtils.getValue(emailInput); // Keep email validation optional
 
-            if (!bookingConfirmation) return;
-            UIUtils.hideElement(bookingConfirmation);
-            UIUtils.removeClass(bookingConfirmation, 'error');
+    if (!nameValue || !phoneValue) {
+        UIUtils.setText(bookingConfirmation, 'გთხოვთ, შეავსოთ სრული სახელი და ტელეფონის ნომერი.');
+        UIUtils.addClass(bookingConfirmation, 'error');
+        UIUtils.showElement(bookingConfirmation);
+        return;
+    }
 
-            const nameValue = UIUtils.getValue(nameInput);
-            const emailValue = UIUtils.getValue(emailInput);
-            const phoneValue = UIUtils.getValue(phoneInput);
-            const { selectedFullDate, selectedTime, selectedService } = this.state;
+    if (!AppConfig.validationRegex.phoneGE.test(phoneValue)) {
+        UIUtils.setText(bookingConfirmation, 'ტელეფონის ნომერი უნდა შეიცავდეს 9 ციფრს.');
+        UIUtils.addClass(bookingConfirmation, 'error');
+        UIUtils.showElement(bookingConfirmation);
+        if(phoneInput) UIUtils.focusElement(phoneInput);
+        return;
+    }
+    // --- END: NEW VALIDATION LOGIC ---
 
-            if (!selectedFullDate || !selectedTime || !selectedService.value || !nameValue) {
-                UIUtils.setText(bookingConfirmation, 'გთხოვთ, შეავსოთ ყველა სავალდებულო ველი და გააკეთოთ არჩევანი ყველა ეტაპზე.');
-                UIUtils.addClass(bookingConfirmation, 'error');
-                UIUtils.showElement(bookingConfirmation);
-                return;
-            }
+    // (The rest of your existing function continues from here...)
+    const submitButton = bookingForm?.querySelector('button[type="submit"]');
 
-            if (emailValue && !AppConfig.validationRegex.email.test(emailValue)) {
-                UIUtils.setText(bookingConfirmation, 'შეყვანილი ელ. ფოსტა არასწორი ფორმატისაა.');
-                UIUtils.addClass(bookingConfirmation, 'error');
-                UIUtils.showElement(bookingConfirmation);
-                if (emailInput) UIUtils.focusElement(emailInput);
-                return;
-            }
-
-            if (phoneValue && !AppConfig.validationRegex.phoneGE.test(phoneValue)) {
-                UIUtils.setText(bookingConfirmation, 'ტელეფონის ნომერი არასწორია.');
-                UIUtils.addClass(bookingConfirmation, 'error');
-                UIUtils.showElement(bookingConfirmation);
-                if (phoneInput) UIUtils.focusElement(phoneInput);
-                return;
-            }
-
-            const submitButton = bookingForm?.querySelector('button[type="submit"]');
             if (submitButton) UIUtils.disableElement(submitButton);
 
-            UIUtils.setText(bookingConfirmation, 'მიმდინარეობს ჯავშნის დამუშავება...');
+            UIUtils.setText(bookingConfirmation, 'მიმდინარეობს დაჯავშნა...');
             UIUtils.showElement(bookingConfirmation);
 
             try {
-                const { data, error } = await supaClient
+                // --- STEP 1: Insert booking AND select the result back ---
+                // The .select() is new and CRITICAL. It returns the created booking.
+                const { data: newBooking, error } = await supaClient
                     .from('bookings')
                     .insert([{
-                        date: selectedFullDate,
-                        time: selectedTime,
-                        service_id: selectedService.value, // It's better to store ID, but name is fine for now
-                        service_name: selectedService.text,
-                        name: nameValue,
-                        email: emailValue,
-                        phone: phoneValue || null
-                    }]);
+                        date: this.state.selectedFullDate,
+                        time: this.state.selectedTime,
+                        service_id: this.state.selectedService.value,
+                        service_name: this.state.selectedService.text,
+                        name: UIUtils.getValue(nameInput),
+                        email: UIUtils.getValue(emailInput),
+                        phone: UIUtils.getValue(phoneInput) || null
+                    }])
+                    .select() // Ask Supabase to return the row that was just created
+                    .single(); // We expect only one row back
 
                 if (error) { throw error; }
+
+                if (!newBooking) { throw new Error("Booking was created, but data was not returned."); }
                 
-                UIUtils.setText(bookingConfirmation, 'ჯავშანი წარმატებით გაიგზავნა.');
+                // --- STEP 2: If the user provided an email, invoke the Edge Function ---
+                const recipientEmail = UIUtils.getValue(emailInput);
+                if (recipientEmail) {
+                    try {
+                        console.log(`Invoking email function for booking ID: ${newBooking.id}`);
+                        await supaClient.functions.invoke('send-booking-confirmation', {
+                            body: {
+                                recipient_email: recipientEmail,
+                                name: newBooking.name,
+                                booking_id: newBooking.id, // The unique ID for the cancel link
+                                booking_date: newBooking.date,
+                                booking_time: newBooking.time,
+                                service_name: newBooking.service_name
+                            },
+                        });
+                    } catch (functionError) {
+                        // IMPORTANT: Don't fail the whole booking if the email fails.
+                        // Just log the error so you can debug it later.
+                        console.error("Email confirmation function failed:", functionError);
+                    }
+                }
+                
+                // (All the rest of your success logic stays the same)
+                this.state.isBookingCompleted = true; 
+                UIUtils.setText(bookingConfirmation, 'თქვენი შეხვედრა დაჯავშნილია');
                 UIUtils.removeClass(bookingConfirmation, 'error');
-                bookingForm?.reset();
-                this.resetStateForNewBooking(); 
-                // Invalidate the cache for the day that was just booked
-                this.state.availableTimesCache[selectedFullDate] = null;
-                setTimeout(() => this._goToStep('date'), 5000);
+                this.state.availableTimesCache[this.state.selectedFullDate] = null;
+                setTimeout(() => {
+                    if(SpaNavigator && typeof SpaNavigator.switchActiveSection === 'function') {
+                        SpaNavigator.switchActiveSection('hero');
+                    }
+                }, 5000);
 
             } catch (err) {
+                // (Your existing error handling logic stays the same)
                 console.error("Booking submission error:", err);
                 UIUtils.setText(bookingConfirmation, `დაფიქსირდა მოულოდნელი შეცდომა: ${err.message}`);
                 UIUtils.addClass(bookingConfirmation, 'error');
-                UIUtils.showElement(bookingConfirmation);
-            } finally {
                 if (submitButton) UIUtils.enableElement(submitButton);
             }
         },
@@ -599,12 +635,21 @@ _renderServiceList() {
             if (this.elements.selectedDateDisplayHeader) UIUtils.setText(this.elements.selectedDateDisplayHeader, '');
             this._updateBookingSummary();
         },
+               // REPLACE THIS ENTIRE FUNCTION
         resetToFirstStep(shouldReloadData = true) {
+            // --- NEW: GATEKEEPER LOGIC ---
+            // If a booking has already been made, show the locked state and stop.
+            if (this.state.isBookingCompleted) {
+                this._showCompletedState();
+                return;
+            }
+            
+            // --- Original logic runs only if no booking was made ---
             this.resetStateForNewBooking();
             this._goToStep('date');
             if (shouldReloadData) {
-                this.state.availableDatesCache = {}; // Clear date cache too on full reset
-                this.state.availableTimesCache = {}; // Clear time cache
+                this.state.availableDatesCache = {};
+                this.state.availableTimesCache = {};
                 this.loadServicesAndRenderCalendar();
             } else {
                 this.renderCalendar();
@@ -612,82 +657,7 @@ _renderServiceList() {
         }
     };
 
-    const ContactForm = {
-        elements: {},
-        init() {
-            this.elements = {
-                form: document.getElementById('contact-form'),
-                confirmationMessage: document.getElementById('contact-confirmation-message'),
-                nameInput: document.getElementById('contact-name'),
-                emailInput: document.getElementById('contact-email'),
-                messageInput: document.getElementById('contact-message')
-            };
-            if(this.elements.form && this.elements.confirmationMessage) {
-                this._bindEvents();
-            } else {
-                console.warn("ContactForm: Form or confirmation message element not found.");
-            }
-        },
-        _bindEvents() {
-            if (this.elements.form) {
-                this.elements.form.addEventListener('submit', (e) => this._handleSubmit(e));
-            }
-        },
-        async _handleSubmit(e) {
-            e.preventDefault();
-            const { form, confirmationMessage, nameInput, emailInput, messageInput } = this.elements;
-            if (!confirmationMessage) { return; }
-
-            UIUtils.hideElement(confirmationMessage);
-            UIUtils.removeClass(confirmationMessage, 'error');
-
-            const nameValue = UIUtils.getValue(nameInput);
-            const emailValue = UIUtils.getValue(emailInput);
-            const messageValue = UIUtils.getValue(messageInput);
-
-            if (!nameValue || !emailValue || !messageValue) {
-                UIUtils.setText(confirmationMessage, 'გთხოვთ, შეავსოთ ყველა ველი.');
-                UIUtils.addClass(confirmationMessage, 'error');
-                UIUtils.showElement(confirmationMessage);
-                return;
-            }
-
-            if (!AppConfig.validationRegex.email.test(emailValue)) {
-                UIUtils.setText(confirmationMessage, 'შეყვანილი ელ. ფოსტა არასწორი ფორმატისაა. გთხოვთ, შეამოწმოთ.');
-                UIUtils.addClass(confirmationMessage, 'error');
-                UIUtils.showElement(confirmationMessage);
-                if(this.elements.emailInput) UIUtils.focusElement(this.elements.emailInput);
-                return;
-            }
-
-            const submitButton = form ? form.querySelector('button[type="submit"]') : null;
-            if (submitButton) { UIUtils.disableElement(submitButton); }
-
-            UIUtils.setText(confirmationMessage, 'შეტყობინება იგზავნება...');
-            UIUtils.removeClass(confirmationMessage, 'error');
-            UIUtils.showElement(confirmationMessage);
-
-            const formData = { name: nameValue, email: emailValue, message: messageValue };
-            try {
-                const response = await ApiService.submitContactForm(formData);
-                UIUtils.setText(confirmationMessage, response.message);
-                UIUtils.toggleClass(confirmationMessage, 'error', !response.success);
-                if (response.success) {
-                    if(form) { form.reset(); }
-                    setTimeout(() => {
-                        if(confirmationMessage) { UIUtils.hideElement(confirmationMessage); }
-                    }, 5000);
-                }
-            } catch (error) {
-                console.error("Contact form submission error:", error);
-                UIUtils.setText(confirmationMessage, 'დაფიქსირდა მოულოდნელი შეცდომა.');
-                UIUtils.addClass(confirmationMessage, 'error');
-                UIUtils.showElement(confirmationMessage);
-            } finally {
-                if (submitButton) { UIUtils.enableElement(submitButton); }
-            }
-        }
-    };
+   
 
     // --- INITIALIZE ALL MODULES ---
     const currentYearSpan = document.getElementById('current-year');
@@ -696,6 +666,5 @@ _renderServiceList() {
     SpaNavigator.init();
     window.BookingFlow = BookingFlow;
     if (typeof BookingFlow !== 'undefined' && BookingFlow.init) { BookingFlow.init(); }
-    if (typeof ContactForm !== 'undefined' && ContactForm.init) { ContactForm.init(); }
 
 });
