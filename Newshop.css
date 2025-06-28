@@ -756,6 +756,12 @@ p.booking-policy-text { font-size: 0.9rem; color: #bbb; line-height: 1.5; }
 .footer-copy { color: var(--text-light-muted); font-size: 0.9rem; text-align: center; flex-grow: 1; }
 .social-icons-footer a { color: var(--text-light-muted); margin-left: 18px; font-size: 1.3rem; transition: color var(--transition-speed), transform var(--transition-speed); display: inline-block; }
 .social-icons-footer a:hover { color: var(--accent-color); transform: translateY(-3px); }
+.footer-copy img {
+  display: inline-block;
+  height: 25px;
+  vertical-align: middle;
+  margin-left: 5px;
+}
 
 /* --- Responsive (Hero parts modified, rest unchanged from your last provided) --- */
 @media (max-width: 992px) {
