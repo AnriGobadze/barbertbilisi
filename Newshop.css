@@ -9,7 +9,7 @@
     --input-bg: #303030;
     --input-border: #444;
     --text-muted: #ccc;
-    --text-light-muted: #aaa;
+    --text-light-muted: #888888;
     --font-family: 'Poppins', sans-serif;
     --transition-speed: 0.3s ease;
     --navbar-height: 75px;
@@ -761,6 +761,8 @@ p.booking-policy-text { font-size: 0.9rem; color: #bbb; line-height: 1.5; }
   height: 25px;
   vertical-align: middle;
   margin-left: 5px;
+ filter: brightness(0) saturate(100%) invert(50%) sepia(0%) saturate(0%) hue-rotate(0deg);
+
 }
 
 /* --- Responsive (Hero parts modified, rest unchanged from your last provided) --- */
